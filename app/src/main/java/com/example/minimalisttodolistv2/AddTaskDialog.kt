@@ -2,11 +2,9 @@ package com.example.minimalisttodolistv2
 
 import android.util.Log
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,10 +15,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,7 +26,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +38,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -64,7 +64,7 @@ fun AddTaskDialog(
     AlertDialog(
         modifier = modifier,
         onDismissRequest = {
-            onEvent(TaskEvent.HideDialog)
+            onEvent(TaskEvent.HideAddTaskDialog)
         }
     ) {
         Box(
@@ -127,7 +127,13 @@ fun AddTaskDialog(
                             textStyle = LocalTextStyle.current.copy(
                                 fontWeight = customFontWeight,
                                 fontSize = MaterialTheme.typography.titleLarge.fontSize
-                            )
+                            ),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Done,
+                                capitalization = KeyboardCapitalization.Sentences,
+                                autoCorrect = true,
+                            ),
                         )
                         TextField(
                             value = state.note,
@@ -149,34 +155,8 @@ fun AddTaskDialog(
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
                             ),
-//                    modifier = Modifier.background(Color.Green)
                         )
-
-                        // Old priority selector
-//                TextField(
-//                    value = state.priority.toString(),
-//                    onValueChange = {
-//                        onEvent(TaskEvent.SetPriority(it.toInt()))
-//                    },
-//                    placeholder = {
-//                        Text(
-//                            text = "Set priority",
-//                            color = transparencyColor,
-//                            fontWeight = customFontWeight,
-//                            style = MaterialTheme.typography.bodySmall,
-//                        )
-//                    },
-//                    colors = TextFieldDefaults.colors(
-//                        focusedContainerColor = Color.Transparent,
-//                        unfocusedContainerColor = Color.Transparent,
-//                        disabledContainerColor = Color.Transparent,
-//                        focusedIndicatorColor = Color.Transparent,
-//                        unfocusedIndicatorColor = Color.Transparent,
-//                    ),
-////                    modifier = Modifier.background(Color.Gray)
-//                )
                         ReadonlyTextField(
-//                    value = viewModel.date,
                             value = if (viewModel.date != "") viewModel.convertMillisToDate(
                                 viewModel.date.toLong()
                             ) else viewModel.date,
@@ -195,7 +175,6 @@ fun AddTaskDialog(
                         }
                         val selectedTime = viewModel.convertMillisToTime(viewModel.time.toLong())
                         ReadonlyTextField(
-//                    value = viewModel.time,
                             value = if (selectedTime == "00:00") "" else selectedTime,
                             onValueChange = {},
                             onClick = {
@@ -209,7 +188,7 @@ fun AddTaskDialog(
                             onEvent(TaskEvent.SetTime(viewModel.time))
                         }
 
-                        // Priority Logic
+                        // Priority Selection
                         var isPrioritySelectionEnabled by remember {
                             mutableStateOf(false)
                         }
@@ -325,15 +304,6 @@ fun AddTaskDialog(
                         modifier = Modifier
                             .align(Alignment.Center)
                     )
-//                    Button(
-//                        modifier = Modifier
-////                            .align(Alignment.CenterHorizontally)
-//                                ,
-//                        onClick = {
-//                            onEvent(TaskEvent.SaveTask)
-//                        }) {
-//                        Text(text = "Save")
-//                    }
                 }
             }
         }

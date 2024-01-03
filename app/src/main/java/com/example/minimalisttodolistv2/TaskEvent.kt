@@ -7,8 +7,10 @@ interface TaskEvent {
     data class SetDate(val date: String): TaskEvent
     data class SetTime(val time: String): TaskEvent
     data class SetPriority(val priority: Int): TaskEvent
-    object ShowDialog: TaskEvent
-    object HideDialog: TaskEvent
+    object ShowAddTaskDialog: TaskEvent
+    object HideAddTaskDialog: TaskEvent
+    object ShowSettingsDialog: TaskEvent
+    object HideSettingsDialog: TaskEvent
     data class SortTasks(val sortType: SortType): TaskEvent
     data class DeleteTask(val task: Task): TaskEvent
 }

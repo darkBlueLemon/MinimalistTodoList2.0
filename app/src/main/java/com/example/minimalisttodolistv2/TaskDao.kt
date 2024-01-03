@@ -15,12 +15,16 @@ interface TaskDao {
     @Delete
     suspend fun deleteTask(task: Task)
 
+    @Query("SELECT * FROM task ORDER BY priority DESC, date ASC")
+    fun getTasksOrderedByPriority(): Flow<List<Task>>
+
     @Query("SELECT * FROM task ORDER BY date ASC")
-    fun getTasksOrderedByDate(): Flow<List<Task>>
+    fun getTasksOrderedByRemainingTime(): Flow<List<Task>>
 
     @Query("SELECT * FROM task ORDER BY taskName ASC")
-    fun getTasksOrderedByTakeName(): Flow<List<Task>>
+    fun getTasksOrderedByAlphabetical(): Flow<List<Task>>
 
-    @Query("SELECT * FROM task ORDER BY note ASC")
-    fun getTasksOrderedByNote(): Flow<List<Task>>
+    @Query("SELECT * FROM task ORDER BY taskName DESC")
+    fun getTasksOrderedByAlphabeticalRev(): Flow<List<Task>>
+
 }

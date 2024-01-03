@@ -8,5 +8,6 @@ data class TaskState(
     val time: String = "",
     val priority: Int = 0,
     val isAddingTask: Boolean = false,
-    val sortType: SortType = SortType.TASK_NAME
+    val isChangingSettings: Boolean = false,
+    val sortType: SortType = SortType.PRIORITY
 )

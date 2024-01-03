@@ -1,8 +1,6 @@
 package com.example.minimalisttodolistv2
 
 import android.util.Log
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,13 +17,14 @@ class TaskViewModel(
     private val dao: TaskDao
 ): ViewModel() {
 
-    private val _sortType = MutableStateFlow(SortType.TASK_NAME)
+    private val _sortType = MutableStateFlow(SortType.ALPHABETICAL)
     private val _tasks = _sortType
         .flatMapLatest { sortType ->
             when(sortType){
-                SortType.TASK_NAME -> dao.getTasksOrderedByTakeName()
-                SortType.NOTE -> dao.getTasksOrderedByNote()
-                SortType.DATE -> dao.getTasksOrderedByDate()
+                SortType.ALPHABETICAL -> dao.getTasksOrderedByAlphabetical()
+                SortType.ALPHABETICAL_REV -> dao.getTasksOrderedByAlphabeticalRev()
+                SortType.REMAINING_TIME -> dao.getTasksOrderedByRemainingTime()
+                SortType.PRIORITY -> dao.getTasksOrderedByPriority()
             }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
@@ -45,7 +44,7 @@ class TaskViewModel(
                     dao.deleteTask(event.task)
                 }
             }
-            TaskEvent.HideDialog-> {
+            TaskEvent.HideAddTaskDialog-> {
                 _state.update { it.copy(
                     isAddingTask = false,
                     taskName = "",
@@ -120,13 +119,23 @@ class TaskViewModel(
                     priority = event.priority
                 ) }
             }
-            TaskEvent.ShowDialog -> {
+            TaskEvent.ShowAddTaskDialog -> {
                 _state.update { it.copy(
                     isAddingTask = true
                 ) }
             }
             is TaskEvent.SortTasks -> {
                 _sortType.value = event.sortType
+            }
+            TaskEvent.ShowSettingsDialog -> {
+                _state.update { it.copy(
+                    isChangingSettings = true
+                )}
+            }
+            TaskEvent.HideSettingsDialog -> {
+                _state.update { it.copy(
+                    isChangingSettings = false
+                )}
             }
         }
     }

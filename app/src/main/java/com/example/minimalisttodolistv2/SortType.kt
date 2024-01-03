@@ -1,7 +1,8 @@
 package com.example.minimalisttodolistv2
 
 enum class SortType {
-    TASK_NAME,
-    NOTE,
-    DATE
+    ALPHABETICAL,
+    ALPHABETICAL_REV,
+    REMAINING_TIME,
+    PRIORITY
 }
