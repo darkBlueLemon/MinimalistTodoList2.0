@@ -1,21 +1,38 @@
 package com.example.minimalisttodolistv2
 
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalTextStyle
@@ -27,26 +44,40 @@ import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.DefaultShadowColor
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.example.minimalisttodolistv2.ui.theme.MinimalistTodoListV2Theme
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
-//    private val viewModel by viewModels<AddTaskViewModel>()
+    private val viewModel2 by viewModels<AddTaskViewModel>()
 
     // Room Database Initialization
     private val db by lazy {
@@ -68,17 +99,23 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        // Fullscreen
+        getWindow().setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         super.onCreate(savedInstanceState)
         setContent {
             MinimalistTodoListV2Theme {
 //                AddItems(){
-//                    viewModel.toggleDatePicker()
+//                    viewModel2.toggleDatePicker()
 //                }
-//                if(viewModel.isDatePickerEnabled) DatePicker(viewModel){
-//                    viewModel.toggleDatePicker()
+//                if(viewModel2.isDatePickerEnabled) DatePicker(viewModel2){
+//                    viewModel2.toggleDatePicker()
 //                }
-//                if(viewModel.isTimePickerEnabled) TimePicker(viewModel){
-//                    viewModel.toggleTimePicker()
+//                if(viewModel2.isTimePickerEnabled) TimePicker(viewModel2){
+//                    viewModel2.toggleTimePicker()
 //                }
 //
 //                Column (
@@ -88,20 +125,20 @@ class MainActivity : ComponentActivity() {
 //                    verticalArrangement = Arrangement.Top
 //                ) {
 //                    Text(
-//                        text = if (viewModel.date != "null") viewModel.date else "null",
+//                        text = if (viewModel2.date != "null") viewModel2.date else "null",
 //                        style = MaterialTheme.typography.bodyLarge,
 //                        modifier = Modifier
 //                            .padding(16.dp)
 //                            .fillMaxWidth()
 //                    )
 //                    Text(
-//                        text = viewModel.hour.toString() + ":" + viewModel.min.toString(),
+//                        text = viewModel2.hour.toString() + ":" + viewModel2.min.toString(),
 //                        style = MaterialTheme.typography.bodyLarge,
 //                        modifier = Modifier
 //                            .padding(16.dp)
 //                            .fillMaxWidth()
 //                            .clickable {
-//                                viewModel.toggleTimePicker()
+//                                viewModel2.toggleTimePicker()
 //                            }
 //                    )
 //                }
@@ -109,11 +146,31 @@ class MainActivity : ComponentActivity() {
 //                DisplayTasks()
 
                 val state by viewModel.state.collectAsState()
-                TaskScreen(state = state, onEvent = viewModel::onEvent)
+                TaskScreen(state = state, onEvent = viewModel::onEvent, viewModel = viewModel2)
             }
         }
     }
 }
+
+//    Column (
+//        modifier = Modifier
+//            .fillMaxSize(),
+//        horizontalAlignment = Alignment.CenterHorizontally,
+//        verticalArrangement = Arrangement.Center
+//    ) {
+//        Box(
+//            modifier = Modifier
+//                .size(width = 350.dp, height = 250.dp)
+//                .border(
+//                    width = 3.dp,
+//                    color = Color.Black,
+//                    shape = RoundedCornerShape(percent = 7)
+//                ),
+//            contentAlignment = Alignment.Center
+//        ) {
+//
+//        }
+//    }
 
 @Composable
 fun DisplayTasks() {
@@ -245,44 +302,133 @@ fun DatePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
 
     if (openDialog.value) {
         DatePickerDialog(
-//            colors = DatePickerDefaults.colors(
-//                containerColor = Color.Red,
-//                titleContentColor = Color.Yellow,
-//                headlineContentColor = Color.Green,
-//                weekdayContentColor = Color.Blue
-//            ),
+            modifier = Modifier
+                    .clip(shape = RoundedCornerShape(percent = 7)),
+            colors = DatePickerDefaults.colors(
+                containerColor = Color.Black,
+//                titleContentColor = Color.White,
+//                headlineContentColor = Color.White,
+//                weekdayContentColor = Color.Green,
+//                subheadContentColor = Color.Magenta,
+//
+//                yearContentColor = Color.White,
+//                currentYearContentColor = Color.White,
+//                selectedYearContentColor = Color.White,
+//                selectedYearContainerColor = Color.White,
+//
+//                dayContentColor = Color.White,
+//                disabledDayContentColor = Color.Yellow,
+//                selectedDayContentColor = Color.Red,
+//                disabledSelectedDayContentColor = Color.Red,
+//                selectedDayContainerColor = Color.White,
+//                disabledSelectedDayContainerColor = Color.Red,
+//
+//                todayContentColor = Color.Transparent,
+//                todayDateBorderColor = Color.Green,
+//
+//                dayInSelectionRangeContentColor = Color.Red,
+//                dayInSelectionRangeContainerColor = Color.Red
+            ),
             onDismissRequest = {
                 openDialog.value = false
                 onClickAction.invoke()
             },
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        openDialog.value = false
-                        onClickAction.invoke()
-                    }
-                ) {
-                    Text("OK")
-                }
+//                TextButton(
+//                    onClick = {
+//                        openDialog.value = false
+//                        onClickAction.invoke()
+//                    }
+//                ) {
+//                    Text("OK")
+//                }
             },
             dismissButton = {
-                TextButton(
-                    onClick = {
-                        openDialog.value = false
-                        onClickAction.invoke()
-                    }
+//                TextButton(
+//                    onClick = {
+//                        openDialog.value = false
+//                        onClickAction.invoke()
+//                    }
+//                ) {
+//                    Text("CANCEL")
+//                }
+            },
+        ) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .clip(shape = RoundedCornerShape(percent = 7))
+                    .background(Color.Black)
+                    .padding(2.dp)
+//                    .size(width = 350.dp, height = 600.dp)
+                    .border(
+                        width = 2.dp,
+                        color = Color.White,
+                        shape = RoundedCornerShape(percent = 7)
+                    ),
+//            contentAlignment = Alignment.Center
+            ) {
+                Column (
+                    modifier = Modifier,
+
                 ) {
-                    Text("CANCEL")
+                    androidx.compose.material3.DatePicker(
+//                        modifier = Modifier.background(Color.Yellow),
+                        state = state,
+                        colors = DatePickerDefaults.colors(
+                            containerColor = Color.Black,
+                            titleContentColor = Color.White,
+                            headlineContentColor = Color.White,
+                            weekdayContentColor = Color.White,
+                            subheadContentColor = Color.Magenta,
+
+                            yearContentColor = Color.White,
+                            currentYearContentColor = Color.White,
+                            selectedYearContentColor = Color.Black,
+                            selectedYearContainerColor = Color.White,
+
+                            dayContentColor = Color.White,
+                            disabledDayContentColor = Color.Yellow,
+                            selectedDayContentColor = Color.Black,
+                            disabledSelectedDayContentColor = Color.Red,
+                            selectedDayContainerColor = Color.White,
+                            disabledSelectedDayContainerColor = Color.Red,
+
+                            todayContentColor = Color.White,
+                            todayDateBorderColor = Color.White,
+
+                            dayInSelectionRangeContentColor = Color.Red,
+                            dayInSelectionRangeContainerColor = Color.Red
+                        )
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp, end = 20.dp),
+                        horizontalArrangement = Arrangement.End
+                    ){
+                        TextButton(
+                            onClick = {
+                                openDialog.value = false
+                                onClickAction.invoke()
+                            }
+                        ) {
+                            Text("CANCEL", color = Color.White)
+                        }
+                        TextButton(
+                            onClick = {
+                                openDialog.value = false
+                                onClickAction.invoke()
+                            }
+                        ) {
+                            Text("OK", color = Color.White)
+                        }
+                    }
                 }
             }
-        ) {
-            androidx.compose.material3.DatePicker(
-                state = state
-            )
         }
     }
 
-    viewModel.setDate(state.selectedDateMillis?.let { viewModel.convertMillisToDate(it) }.toString())
+//    viewModel.setDate(state.selectedDateMillis?.let { viewModel.convertMillisToDate(it) }.toString())
+    viewModel.setDate(state.selectedDateMillis.toString())
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -314,7 +460,7 @@ fun TimePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
                     shape = RoundedCornerShape(size = 12.dp)
                 ),
             onDismissRequest = {
-                showDialog = false
+//                showDialog = false
                 viewModel.toggleTimePicker()
             }
         ) {
@@ -339,8 +485,9 @@ fun TimePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
                 ) {
                     // dismiss button
                     TextButton(onClick = {
-                        showDialog = false
+//                        showDialog = false
                         viewModel.toggleTimePicker()
+                        onClickAction.invoke()
                     }) {
                         Text(text = "Dismiss")
                     }
@@ -348,11 +495,12 @@ fun TimePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
                     // Confirm button
                     TextButton(
                         onClick = {
-                            showDialog = false
+//                            showDialog = false
                             selectedHour = timePickerState.hour
                             selectedMinute = timePickerState.minute
                             viewModel.toggleTimePicker()
                             viewModel.setTime(selectedHour, selectedMinute)
+                            onClickAction.invoke()
                         }
                     ) {
                         Text(text = "Confirm")

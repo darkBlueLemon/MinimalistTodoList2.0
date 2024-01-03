@@ -5,6 +5,8 @@ interface TaskEvent {
     data class SetTaskName(val taskName: String): TaskEvent
     data class SetNote(val note: String): TaskEvent
     data class SetDate(val date: String): TaskEvent
+    data class SetTime(val time: String): TaskEvent
+    data class SetPriority(val priority: Int): TaskEvent
     object ShowDialog: TaskEvent
     object HideDialog: TaskEvent
     data class SortTasks(val sortType: SortType): TaskEvent

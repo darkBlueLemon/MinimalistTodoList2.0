@@ -43,8 +43,9 @@ class AddTaskViewModel: ViewModel() {
     }
 
     // Time
-    private var _hour by mutableStateOf(-1)
-    private var _min by mutableStateOf(-1)
+    private var _hour by mutableStateOf(0)
+    private var _min by mutableStateOf(0)
+    val time: String get() = ((_hour * 3600 + _min * 60) * (1000)).toString()
     val hour: Int get() = _hour
     val min: Int get() = _min
 
@@ -53,4 +54,10 @@ class AddTaskViewModel: ViewModel() {
         _min = newMin
     }
 
+    fun convertMillisToTime(millis: Long): String {
+        val hours = millis / (1000 * 60 * 60)
+        val minutes = (millis % (1000 * 60 * 60)) / (1000 * 60)
+
+        return String.format("%02d:%02d", hours, minutes)
+    }
 }

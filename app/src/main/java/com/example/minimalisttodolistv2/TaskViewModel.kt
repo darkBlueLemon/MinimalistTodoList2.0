@@ -1,5 +1,6 @@
 package com.example.minimalisttodolistv2
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -51,16 +52,26 @@ class TaskViewModel(
                 val taskName = state.value.taskName
                 val note = state.value.note
                 val date = state.value.date
+                val time = state.value.time
+                val priority = state.value.priority
 
                 // We don't save anything if something empty
-                if(taskName.isBlank() || note.isBlank() || date.isBlank()){
+//                if(taskName.isBlank() || note.isBlank() || date.isBlank()){
+                if(taskName.isBlank() || note.isBlank()){
+                    Log.e("MYTAG","ERROR while saving task")
                     return
+                }
+
+                if(time.isBlank()){
+                    Log.d("MYTAG","Time is Blank")
                 }
 
                 val task = Task(
                     taskName = taskName,
                     note = note,
-                    date = date
+                    date = date,
+                    time = time,
+                    priority = priority
                 )
                 viewModelScope.launch {
                     dao.upsertTask(task)
@@ -69,7 +80,9 @@ class TaskViewModel(
                     isAddingTask = false,
                     taskName = "",
                     note = "",
-                    date = ""
+                    date = "",
+                    time = "",
+                    priority = 0
                 ) }
             }
             is TaskEvent.SetTaskName -> {
@@ -85,6 +98,16 @@ class TaskViewModel(
             is TaskEvent.SetDate -> {
                 _state.update { it.copy(
                     date = event.date
+                ) }
+            }
+            is TaskEvent.SetTime -> {
+                _state.update { it.copy(
+                    time = event.time
+                ) }
+            }
+            is TaskEvent.SetPriority -> {
+                _state.update { it.copy(
+                    priority = event.priority
                 ) }
             }
             TaskEvent.ShowDialog -> {

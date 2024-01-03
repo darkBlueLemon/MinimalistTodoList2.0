@@ -5,6 +5,8 @@ data class TaskState(
     val taskName: String = "",
     val note: String = "",
     val date: String = "",
+    val time: String = "",
+    val priority: Int = 0,
     val isAddingTask: Boolean = false,
     val sortType: SortType = SortType.TASK_NAME
 )
