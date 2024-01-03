@@ -1,11 +1,17 @@
 package com.example.minimalisttodolistv2
 
+import android.Manifest
+import android.app.NotificationManager
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -32,6 +38,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -63,12 +70,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
@@ -110,172 +120,71 @@ class MainActivity : ComponentActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         super.onCreate(savedInstanceState)
+
+        val notificationService = NotificationService(applicationContext)
+
         setContent {
             MinimalistTodoListV2Theme {
-//                AddItems(){
-//                    viewModel2.toggleDatePicker()
-//                }
-//                if(viewModel2.isDatePickerEnabled) DatePicker(viewModel2){
-//                    viewModel2.toggleDatePicker()
-//                }
-//                if(viewModel2.isTimePickerEnabled) TimePicker(viewModel2){
-//                    viewModel2.toggleTimePicker()
-//                }
-//
-//                Column (
-//                    modifier = Modifier
-//                        .fillMaxSize(),
-//                    horizontalAlignment = Alignment.CenterHorizontally,
-//                    verticalArrangement = Arrangement.Top
-//                ) {
-//                    Text(
-//                        text = if (viewModel2.date != "null") viewModel2.date else "null",
-//                        style = MaterialTheme.typography.bodyLarge,
-//                        modifier = Modifier
-//                            .padding(16.dp)
-//                            .fillMaxWidth()
-//                    )
-//                    Text(
-//                        text = viewModel2.hour.toString() + ":" + viewModel2.min.toString(),
-//                        style = MaterialTheme.typography.bodyLarge,
-//                        modifier = Modifier
-//                            .padding(16.dp)
-//                            .fillMaxWidth()
-//                            .clickable {
-//                                viewModel2.toggleTimePicker()
-//                            }
-//                    )
-//                }
-//
-//                DisplayTasks()
 
-                val state by viewModel.state.collectAsState()
-                TaskScreen(state = state, onEvent = viewModel::onEvent, viewModel = viewModel2)
-            }
-        }
-    }
-}
+                // Notifications
+                val context = LocalContext.current
+                var hasNotificationPermission by remember {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        mutableStateOf(
+                            ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.POST_NOTIFICATIONS
+                            ) == PackageManager.PERMISSION_GRANTED
+                        )
+                    } else mutableStateOf(true)
+                }
 
-@Composable
-fun DisplayTasks() {
-    // Sample list of items
-    val items = (1..100).map { "Item $it" }
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        items(items.count()) { item ->
-            Column (
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = item.toString(),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier
-                        .fillMaxWidth()
+                val permissionLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.RequestPermission(),
+                    onResult = { isGranted ->
+                        hasNotificationPermission = isGranted
+                    }
                 )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
+                Column (
+                    modifier = Modifier,
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = "date",
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier
-                    )
-                    Text(
-                        text = " | ",
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier
-                    )
-                    Text(
-                        text = "note",
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier
-                    )
+                    Button(onClick = {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        }
+                    }) {
+                       Text(text = "Request Permission")
+                    }
+                    Button(onClick = {
+                        if(hasNotificationPermission) {
+                            notificationService.showNotification(Counter.value)
+                        }
+                    }) {
+                        Text(text = "Send Notification")
+                    }
                 }
+
+
+                // Calling TaskScreen
+                val state by viewModel.state.collectAsState()
+//                TaskScreen(state = state, onEvent = viewModel::onEvent, viewModel = viewModel2)
+
             }
         }
     }
-}
 
-@Composable
-fun AddItems(onClickAction: () -> Unit) {
+//    private fun showNotification() {
+//        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+//        val notification = NotificationCompat.Builder(applicationContext, NotificationService.COUNTER_CHANNEL_ID)
+//            .setContentTitle("123456789 123456789 123456789")
+//            .setContentText("Content Text fjsdklf asdfjdsk fkds fjasdkj f")
+//            .setSmallIcon(R.drawable.ic_launcher_foreground)
+//            .build()
+//        notificationManager.notify(1, notification)
+//    }
 
-    // Editable text field
-    var itemText by remember { mutableStateOf("") }
-    var noteText by remember { mutableStateOf("") }
-
-    Column (
-        modifier = Modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        // The size only changes for the text and not the hint
-
-        TextField(
-            value = itemText,
-            onValueChange = { newText -> itemText = newText },
-//            label = { Text("Editable Text") },
-            placeholder = { Text("I want to ...") }, // Set the hint text
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done
-            ),
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-//                .background(Color.White) // Set background to transparent
-//                .border(
-//                    BorderStroke(1.dp, LocalContentColor.current), // Border with underline
-//                    shape = MaterialTheme.shapes.small
-//                )
-            textStyle = LocalTextStyle.current.copy(fontSize = 20.sp) // Adjust the text size here
-        )
-        TextField(
-            value = noteText,
-            onValueChange = { newText -> noteText = newText },
-//            label = { Text("Editable Text") },
-            placeholder = { Text("Add note") }, // Set the hint text
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done
-            ),
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-//                .background(Color.White) // Set background to transparent
-//                .border(
-//                    BorderStroke(1.dp, LocalContentColor.current), // Border with underline
-//                    shape = MaterialTheme.shapes.small
-//                )
-            textStyle = LocalTextStyle.current.copy(fontSize = 15.sp) // Adjust the text size here
-        )
-
-        Text(
-            text = "Add Date",
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-                .clickable {
-                    onClickAction.invoke()
-                }
-        )
-
-        // Non-editable text view
-        Text(
-            text = noteText,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-        )
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -545,24 +454,3 @@ fun TimePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
         }
     }
 }
-
-//    Column (
-//        modifier = Modifier
-//            .fillMaxSize(),
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.Center
-//    ) {
-//        Box(
-//            modifier = Modifier
-//                .size(width = 350.dp, height = 250.dp)
-//                .border(
-//                    width = 3.dp,
-//                    color = Color.Black,
-//                    shape = RoundedCornerShape(percent = 7)
-//                ),
-//            contentAlignment = Alignment.Center
-//        ) {
-//
-//        }
-//    }
-
