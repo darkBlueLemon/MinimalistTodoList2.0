@@ -41,6 +41,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerColors
+import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -74,6 +76,8 @@ import com.example.minimalisttodolistv2.ui.theme.MinimalistTodoListV2Theme
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 class MainActivity : ComponentActivity() {
 
@@ -151,26 +155,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-//    Column (
-//        modifier = Modifier
-//            .fillMaxSize(),
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.Center
-//    ) {
-//        Box(
-//            modifier = Modifier
-//                .size(width = 350.dp, height = 250.dp)
-//                .border(
-//                    width = 3.dp,
-//                    color = Color.Black,
-//                    shape = RoundedCornerShape(percent = 7)
-//                ),
-//            contentAlignment = Alignment.Center
-//        ) {
-//
-//        }
-//    }
 
 @Composable
 fun DisplayTasks() {
@@ -402,7 +386,9 @@ fun DatePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
                         )
                     )
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp, end = 20.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 20.dp, end = 20.dp),
                         horizontalArrangement = Arrangement.End
                     ){
                         TextButton(
@@ -428,7 +414,8 @@ fun DatePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
     }
 
 //    viewModel.setDate(state.selectedDateMillis?.let { viewModel.convertMillisToDate(it) }.toString())
-    viewModel.setDate(state.selectedDateMillis.toString())
+//    if(state.selectedDateMillis != null) Log.d("MYTAG", state.selectedDateMillis.toString())
+    if(state.selectedDateMillis != null) viewModel.setDate(state.selectedDateMillis.toString())
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -455,10 +442,10 @@ fun TimePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
         AlertDialog(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    color = MaterialTheme.colorScheme.surface,
-                    shape = RoundedCornerShape(size = 12.dp)
-                ),
+//                .background(
+//                    color = Color.Black,
+//                ),
+                    ,
             onDismissRequest = {
 //                showDialog = false
                 viewModel.toggleTimePicker()
@@ -466,47 +453,116 @@ fun TimePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
         ) {
             Column(
                 modifier = Modifier
-                    .background(
-                        color = Color.LightGray.copy(alpha = 0.3f)
-                    )
-                    .padding(top = 28.dp, start = 20.dp, end = 20.dp, bottom = 12.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+//                    .background(
+//                        color = Color.LightGray.copy(alpha = 0.3f)
+//                    )
+//                    .padding(top = 28.dp, start = 20.dp, end = 20.dp, bottom = 12.dp),
+                        ,
+//                verticalArrangement = Arrangement.Center,
+//                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Time picker
-                TimePicker(state = timePickerState)
-
-                // Buttons
-                Row(
+                Box(
                     modifier = Modifier
-                        .padding(top = 12.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                        .align(Alignment.CenterHorizontally)
+                        .clip(shape = RoundedCornerShape(percent = 7))
+                        .background(Color.Black)
+//                    .size(width = 350.dp, height = 600.dp)
+                        .border(
+                            width = 2.dp,
+                            color = Color.White,
+                            shape = RoundedCornerShape(percent = 7)
+                        )
+                        .padding(20.dp)
+                        ,
+//            contentAlignment = Alignment.Center
                 ) {
-                    // dismiss button
-                    TextButton(onClick = {
-//                        showDialog = false
-                        viewModel.toggleTimePicker()
-                        onClickAction.invoke()
-                    }) {
-                        Text(text = "Dismiss")
-                    }
+                    Column (
+                        modifier = Modifier,
+                        horizontalAlignment = Alignment.End
+                    ){
 
-                    // Confirm button
-                    TextButton(
-                        onClick = {
+                        // Time picker
+                        TimePicker(
+                            modifier = Modifier.padding(0.dp),
+                            state = timePickerState,
+                            colors = TimePickerDefaults.colors(
+                                clockDialColor = Color.Black,
+                                clockDialSelectedContentColor = Color.Black,
+                                clockDialUnselectedContentColor = Color.White,
+
+                                selectorColor = Color.White,
+//                                containerColor = Color.Red,
+
+                                periodSelectorBorderColor = Color.White,
+//                                periodSelectorBorderColor = Color(0x7FFFFFFF),
+//                                periodSelectorSelectedContainerColor = Color(0x7FFFFFFF),
+                                periodSelectorSelectedContainerColor = Color.White,
+                                periodSelectorUnselectedContainerColor = Color.Black,
+                                periodSelectorSelectedContentColor = Color.Black,
+                                periodSelectorUnselectedContentColor = Color.White,
+
+                                timeSelectorSelectedContainerColor = Color.White,
+                                timeSelectorUnselectedContainerColor = Color.Black,
+                                timeSelectorSelectedContentColor = Color.Black,
+                                timeSelectorUnselectedContentColor = Color.White
+                            )
+                        )
+
+                        // Buttons
+                        Row(
+                            modifier = Modifier
+//                                .padding(top = 12.dp)
+//                                .fillMaxWidth(),
+                                    ,
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            // dismiss button
+                            TextButton(onClick = {
+//                        showDialog = false
+                                viewModel.toggleTimePicker()
+                                onClickAction.invoke()
+                            }) {
+                                Text(text = "CANCEL", color = Color.White)
+                            }
+
+                            // Confirm button
+                            TextButton(
+                                onClick = {
 //                            showDialog = false
-                            selectedHour = timePickerState.hour
-                            selectedMinute = timePickerState.minute
-                            viewModel.toggleTimePicker()
-                            viewModel.setTime(selectedHour, selectedMinute)
-                            onClickAction.invoke()
+                                    selectedHour = timePickerState.hour
+                                    selectedMinute = timePickerState.minute
+                                    viewModel.toggleTimePicker()
+                                    viewModel.setTime(selectedHour, selectedMinute)
+                                    onClickAction.invoke()
+                                }
+                            ) {
+                                Text(text = "OK", color = Color.White)
+                            }
                         }
-                    ) {
-                        Text(text = "Confirm")
                     }
                 }
             }
         }
     }
 }
+
+//    Column (
+//        modifier = Modifier
+//            .fillMaxSize(),
+//        horizontalAlignment = Alignment.CenterHorizontally,
+//        verticalArrangement = Arrangement.Center
+//    ) {
+//        Box(
+//            modifier = Modifier
+//                .size(width = 350.dp, height = 250.dp)
+//                .border(
+//                    width = 3.dp,
+//                    color = Color.Black,
+//                    shape = RoundedCornerShape(percent = 7)
+//                ),
+//            contentAlignment = Alignment.Center
+//        ) {
+//
+//        }
+//    }
+

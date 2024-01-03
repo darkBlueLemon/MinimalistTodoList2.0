@@ -1,6 +1,8 @@
 package com.example.minimalisttodolistv2
 
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -45,7 +47,12 @@ class TaskViewModel(
             }
             TaskEvent.HideDialog-> {
                 _state.update { it.copy(
-                    isAddingTask = false
+                    isAddingTask = false,
+                    taskName = "",
+                    note = "",
+                    date = "",
+                    time = "",
+                    priority = 0
                 ) }
             }
             TaskEvent.SaveTask -> {
@@ -57,8 +64,11 @@ class TaskViewModel(
 
                 // We don't save anything if something empty
 //                if(taskName.isBlank() || note.isBlank() || date.isBlank()){
-                if(taskName.isBlank() || note.isBlank()){
+                if(taskName.isBlank()){
                     Log.e("MYTAG","ERROR while saving task")
+                    _state.update { it.copy(
+                        isAddingTask = false,
+                    )}
                     return
                 }
 

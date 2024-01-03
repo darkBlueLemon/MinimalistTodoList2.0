@@ -22,7 +22,7 @@ class AddTaskViewModel: ViewModel() {
     }
 
     // Date
-    private var _date by mutableStateOf("null")
+    private var _date by mutableStateOf("")
     val date: String get() = _date
 
     fun setDate(newDate: String){

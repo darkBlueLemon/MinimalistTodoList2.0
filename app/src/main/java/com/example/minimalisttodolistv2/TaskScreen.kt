@@ -171,8 +171,11 @@ fun TaskScreen(
                             fontSize = 20.sp
                         )
                         Log.d("MYTAG", task.time)
+                        val date = if(task.date == "") "" else viewModel.convertMillisToDate(task.date.toLong())
+                        val time = if(task.time == "") "" else viewModel.convertMillisToTime(task.time.toLong())
                         Text(
-                            text = viewModel.convertMillisToDate(task.date.toLong()) + " " + viewModel.convertMillisToTime(task.time.toLong()),
+                            text = "$date $time",
+//                            text = "testing",
                             fontSize = 12.sp
                         )
                     }
