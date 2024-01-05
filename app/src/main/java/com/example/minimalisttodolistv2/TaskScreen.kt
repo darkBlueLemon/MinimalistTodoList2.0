@@ -30,7 +30,11 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +42,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 
 @Composable
 fun TaskScreen(
@@ -46,6 +54,25 @@ fun TaskScreen(
     viewModel: AddTaskViewModel
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+
+    // Lottie Animation
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.task_complete_animation))
+    var isPlaying by remember {
+        mutableStateOf(false)
+    }
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        isPlaying = isPlaying
+    )
+    LaunchedEffect(key1 = progress) {
+        if(progress == 0f) {
+            isPlaying = false
+        }
+        if(progress == 1f) {
+            isPlaying = false
+        }
+    }
+
 
     Scaffold(
         floatingActionButton = {
@@ -149,7 +176,9 @@ fun TaskScreen(
             items(state.tasks){ task ->
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ){
                     Icon(
                         modifier = Modifier.size(20.dp),
@@ -160,27 +189,66 @@ fun TaskScreen(
                     Column (
                         modifier = Modifier
                             .weight(1f)
+                            .padding(start = 5.dp)
                     ){
                         Text(
-                            text = "${task.taskName} ${task.note}",
-                            fontSize = 20.sp
+                            text = task.taskName,
+                            fontSize = 20.sp,
                         )
+                        if(task.note != "") {
+                            Text(
+                                text = task.note,
+//                            text = "testing",
+                                fontSize = 12.sp,
+                                color = Color(0x8FFFFFFF)
+                            )
+                        }
                         val date = if(task.date == "") "" else viewModel.convertMillisToDate(task.date.toLong())
                         val time = if(task.time == "") "" else viewModel.convertMillisToTime(task.time.toLong())
-                        Text(
-                            text = "$date $time",
+                        if(date != "") {
+                            Text(
+                                text = "$date $time",
 //                            text = "testing",
-                            fontSize = 12.sp
-                        )
+                                fontSize = 12.sp,
+                                color = Color(0x8FFFFFFF)
+                            )
+                        }
                     }
-                    IconButton(onClick = {
-                        onEvent(TaskEvent.DeleteTask(task))
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete Task"
-                        )
-                    }
+//                    Column
+//                        modifier = Modifier
+//                            .weight(1f)
+//                    ){
+//                        Text(
+//                            text = "${task.taskName} ${task.note}",
+//                            fontSize = 20.sp
+//                        )
+//                        val date = if(task.date == "") "" else viewModel.convertMillisToDate(task.date.toLong())
+//                        val time = if(task.time == "") "" else viewModel.convertMillisToTime(task.time.toLong())
+//                        Text(
+//                            text = "$date $time",
+////                            text = "testing",
+//                            fontSize = 12.sp
+//                        )
+//                    }
+                    LottieAnimation(
+                        modifier = Modifier
+                            .background(Color.Black)
+                            .size(25.dp)
+                            .clickable {
+                                isPlaying = true
+                            },
+                        composition = composition,
+                        progress = { progress },
+
+                    )
+//                    IconButton(onClick = {
+//                        onEvent(TaskEvent.DeleteTask(task))
+//                    }) {
+//                        Icon(
+//                            imageVector = Icons.Default.Delete,
+//                            contentDescription = "Delete Task"
+//                        )
+//                    }
                 }
             }
         }
