@@ -1,11 +1,9 @@
 package com.example.minimalisttodolistv2
 
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.runtime.State
+import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import java.text.SimpleDateFormat
@@ -59,5 +57,15 @@ class AddTaskViewModel: ViewModel() {
         val minutes = (millis % (1000 * 60 * 60)) / (1000 * 60)
 
         return String.format("%02d:%02d", hours, minutes)
+    }
+
+    fun getTimeAndDateAsMillis(): Long {
+        return _date.toLong() + time.toLong()
+    }
+
+    fun callNotificationScheduler(title: String, message: String, context: Context){
+        Log.d("MYTAG", "call notification scheduler from addTaskViewModel")
+        val notificationService = NotificationService(context = context)
+        notificationService.scheduleNotification(title, message, getTimeAndDateAsMillis())
     }
 }

@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -103,7 +104,7 @@ fun TaskScreen(
     ) { padding ->
 
         if(state.isAddingTask){
-            AddTaskDialog(state = state, onEvent = onEvent, viewModel = viewModel)
+            AddTaskDialog(state = state, onEvent = onEvent, viewModel = viewModel, context = LocalContext.current)
         }
         if(state.isChangingSettings){
             ChangeSettingsDialog(state = state, onEvent = onEvent, viewModel = viewModel)

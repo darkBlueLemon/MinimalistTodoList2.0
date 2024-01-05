@@ -1,7 +1,9 @@
 package com.example.minimalisttodolistv2
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,6 +45,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.minimalisttodolistv2.NotificationTitle.Companion.getNotificationTitle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +53,8 @@ fun AddTaskDialog(
     state: TaskState,
     onEvent: (TaskEvent) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: AddTaskViewModel
+    viewModel: AddTaskViewModel,
+    context: Context
 ) {
 
     // Clear date and time if the task wasn't added
@@ -160,6 +164,7 @@ fun AddTaskDialog(
                             value = if (viewModel.date != "") viewModel.convertMillisToDate(
                                 viewModel.date.toLong()
                             ) else viewModel.date,
+//                            value = viewModel.date,
                             onValueChange = {},
                             onClick = {
                                 viewModel.toggleDatePicker()
@@ -174,16 +179,19 @@ fun AddTaskDialog(
                             onEvent(TaskEvent.SetDate(viewModel.date))
                         }
                         val selectedTime = viewModel.convertMillisToTime(viewModel.time.toLong())
-                        ReadonlyTextField(
-                            value = if (selectedTime == "00:00") "" else selectedTime,
-                            onValueChange = {},
-                            onClick = {
-                                viewModel.toggleTimePicker()
-                            },
-                            transparencyColor = transparencyColor,
-                            customFontWeight = customFontWeight,
-                            text = "Add time"
-                        )
+                        if(viewModel.date != "") {
+                            ReadonlyTextField(
+                                value = if (selectedTime == "00:00") "" else selectedTime,
+//                            value = viewModel.time,
+                                onValueChange = {},
+                                onClick = {
+                                    viewModel.toggleTimePicker()
+                                },
+                                transparencyColor = transparencyColor,
+                                customFontWeight = customFontWeight,
+                                text = "Add time"
+                            )
+                        }
                         if (viewModel.isTimePickerEnabled) TimePicker(viewModel) {
                             onEvent(TaskEvent.SetTime(viewModel.time))
                         }
@@ -199,7 +207,7 @@ fun AddTaskDialog(
                         ) { isEnabled ->
                             if (isEnabled) {
                                 var prioritySelected by remember {
-                                    mutableIntStateOf(0)
+                                    mutableIntStateOf(1)
                                 }
                                 Row(
                                     modifier = Modifier
@@ -280,6 +288,13 @@ fun AddTaskDialog(
                             indication = null,
                             onClick = {
                                 onEvent(TaskEvent.SaveTask)
+                                // first place where alarm scheduler is called
+                                if (state.date.isNotBlank()) viewModel.callNotificationScheduler(
+//                                    state.taskName,
+                                    getNotificationTitle(),
+                                    state.note,
+                                    context
+                                )
                                 viewModel.setDate("")
                             }
                         )

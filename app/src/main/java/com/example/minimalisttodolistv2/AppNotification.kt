@@ -5,11 +5,13 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.util.Log
 
 class AppNotification: Application() {
 
     override fun onCreate() {
         super.onCreate()
+        Log.d("MYTAG","channel created")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 NotificationService.COUNTER_CHANNEL_ID,
