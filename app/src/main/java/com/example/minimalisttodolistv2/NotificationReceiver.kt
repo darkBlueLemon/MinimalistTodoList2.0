@@ -10,6 +10,7 @@ import androidx.core.app.NotificationCompat
 // Changed
 const val titleExtra = "title extra"
 const val messageExtra = "message extra"
+//const val timeExtra = "time extra"
 
 class NotificationReceiver: BroadcastReceiver() {
 
@@ -23,6 +24,8 @@ class NotificationReceiver: BroadcastReceiver() {
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(intent?.getStringExtra(titleExtra))
             .setContentText(intent?.getStringExtra(messageExtra))
+//            .setPriority(NotificationCompat.PRIORITY_HIGH)
+//            .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
             .build()
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -34,5 +37,13 @@ class NotificationReceiver: BroadcastReceiver() {
             intent?.getStringExtra(titleExtra).hashCode(),
             notification
         )
+
+        // Set Alarm again
+//        val intervalMillis = 60 * 1000L
+//        val notificationService = NotificationService(context = context)
+//        notificationService.scheduleNotification(intent?.getStringExtra(titleExtra)!!,
+//            intent.getStringExtra(messageExtra)!!, intent.getLongExtra(
+//                timeExtra, 0) + intervalMillis
+//        )
     }
 }

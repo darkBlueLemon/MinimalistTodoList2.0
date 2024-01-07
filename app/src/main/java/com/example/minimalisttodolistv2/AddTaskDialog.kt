@@ -28,16 +28,22 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -46,8 +52,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.minimalisttodolistv2.NotificationTitle.Companion.getNotificationTitle
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun AddTaskDialog(
     state: TaskState,
@@ -64,6 +72,14 @@ fun AddTaskDialog(
             viewModel.setTime(0,0)
         }
     }
+
+    // Keyboard
+//    val focusRequester = remember { FocusRequester() }
+//    val keyboardController = LocalSoftwareKeyboardController.current
+//    LaunchedEffect(Unit) {
+//        runBlocking { delay(10) }
+//        focusRequester.requestFocus()
+//    }
 
     AlertDialog(
         modifier = modifier,
@@ -108,6 +124,10 @@ fun AddTaskDialog(
                         verticalArrangement = Arrangement.Top
                     ) {
                         TextField(
+//                            modifier = Modifier.focusRequester(focusRequester).onGloballyPositioned {
+//                                focusRequester.requestFocus()
+//                                keyboardController?.showSoftwareKeyboard()
+//                            },
                             value = state.taskName,
                             onValueChange = {
                                 onEvent(TaskEvent.SetTaskName(it))
@@ -159,6 +179,7 @@ fun AddTaskDialog(
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
                             ),
+                            singleLine = true,
                         )
                         ReadonlyTextField(
                             value = if (viewModel.date != "") viewModel.convertMillisToDate(

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -41,6 +42,7 @@ class TaskViewModel(
         when(event){
             is TaskEvent.DeleteTask -> {
                 viewModelScope.launch {
+                    delay(850)
                     dao.deleteTask(event.task)
                 }
             }

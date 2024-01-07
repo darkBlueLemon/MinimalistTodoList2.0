@@ -68,4 +68,9 @@ class AddTaskViewModel: ViewModel() {
         val notificationService = NotificationService(context = context)
         notificationService.scheduleNotification(title, message, getTimeAndDateAsMillis())
     }
+//
+//    fun cancelNotification(message: String, context: Context) {
+//        val notificationService = NotificationService(context = context)
+//        notificationService.cancelAlarm(message)
+//    }
 }

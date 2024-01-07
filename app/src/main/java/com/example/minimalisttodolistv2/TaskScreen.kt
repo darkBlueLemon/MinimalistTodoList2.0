@@ -1,6 +1,29 @@
 package com.example.minimalisttodolistv2
 
+import android.content.Context
 import android.util.Log
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Down
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Up
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseInExpo
+import androidx.compose.animation.core.EaseInQuad
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -44,35 +67,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.minimalisttodolistv2.NotificationTitle.Companion.getNotificationTitle
+import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun TaskScreen(
     state: TaskState,
     onEvent: (TaskEvent) -> Unit,
-    viewModel: AddTaskViewModel
+    viewModel: AddTaskViewModel,
+    context: Context
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-
-    // Lottie Animation
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.task_complete_animation))
-    var isPlaying by remember {
-        mutableStateOf(false)
-    }
-    val progress by animateLottieCompositionAsState(
-        composition = composition,
-        isPlaying = isPlaying
-    )
-    LaunchedEffect(key1 = progress) {
-        if(progress == 0f) {
-            isPlaying = false
-        }
-        if(progress == 1f) {
-            isPlaying = false
-        }
-    }
-
 
     Scaffold(
         floatingActionButton = {
@@ -86,7 +95,6 @@ fun TaskScreen(
                     modifier = Modifier
                         .clip(shape = RoundedCornerShape(percent = 7))
                         .background(Color.Black)
-//                            .size(width = 350.dp, height = 400.dp)
                         .clickable(
                             interactionSource = interactionSource,
                             indication = null
@@ -110,7 +118,6 @@ fun TaskScreen(
                     modifier = Modifier
                         .clip(shape = RoundedCornerShape(percent = 7))
                         .background(Color.Black)
-//                            .size(width = 350.dp, height = 400.dp)
                         .border(
                             width = 2.dp,
                             color = Color.White,
@@ -137,118 +144,117 @@ fun TaskScreen(
             ChangeSettingsDialog(state = state, onEvent = onEvent, viewModel = viewModel)
         }
 
-        LazyColumn(
-            contentPadding = PaddingValues(16.dp),
-            modifier = Modifier
-                .background(Color.Black)
-                .padding(16.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ){
-//            item{
-//                Row (
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .horizontalScroll(rememberScrollState()),
-//                    verticalAlignment = Alignment.CenterVertically
-//                ){
-//                    SortType.values().forEach { sortType ->
-//                        Row(
-//                            modifier = Modifier
-//                                .clickable {
-//                                    onEvent(TaskEvent.SortTasks(sortType))
-//                                },
-//                            verticalAlignment = Alignment.CenterVertically
-//                        ){
-//                            RadioButton(
-//                                selected = state.sortType == sortType,
-//                                onClick = {
-//                                    onEvent(TaskEvent.SortTasks(sortType))
-//                                }
-//                            )
-//                            Text(
-//                                text = sortType.name
-//                            )
-//                        }
-//                    }
-//                }
-//            }
-            items(state.tasks){ task ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ){
-                    Icon(
-                        modifier = Modifier.size(20.dp),
-                        imageVector = Icons.Rounded.Star,
-                        tint = if(task.priority == 0) Color.Transparent else if (task.priority == 1) Color(0xFFFDFD96) else if(task.priority == 2) Color(0xFFFF964F) else Color(0xFFFF6961),
-                        contentDescription = "Priority Icon"
+        AnimatedContent(
+            targetState = state.tasks,
+            transitionSpec = {
+                fadeOut(animationSpec = tween(durationMillis = 850, easing = EaseInExpo) )
+                             slideIntoContainer(
+                                 animationSpec = tween(0, easing = EaseIn),
+                                 towards = Up
+                             ).with(
+                                 slideOutOfContainer(
+                                     animationSpec = tween(0, easing = EaseOut),
+                                     towards = Down
+                                 )
+                             )
+            },
+            label = "",
+        ) {
+            Text(text = it.toString())
+
+            LazyColumn(
+                contentPadding = PaddingValues(10.dp),
+                modifier = Modifier
+                    .background(Color.Black)
+                    .padding(5.dp)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(state.tasks) { task ->
+                    // Lottie Animation
+                    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.task_complete_animation))
+                    var isPlaying by remember {
+                        mutableStateOf(false)
+                    }
+                    val progress by animateLottieCompositionAsState(
+                        composition = composition,
+                        isPlaying = isPlaying,
+                        speed = 3f,
                     )
-                    Column (
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 5.dp)
-                    ){
-                        Text(
-                            text = task.taskName,
-                            fontSize = 20.sp,
-                        )
-                        if(task.note != "") {
-                            Text(
-                                text = task.note,
-//                            text = "testing",
-                                fontSize = 12.sp,
-                                color = Color(0x8FFFFFFF)
+
+                    // Animate visibility for each item
+                    AnimatedVisibility(
+//                        visible = true, // Change this to control the visibility
+                        visible = !isPlaying, // Change this to control the visibility
+//                        enter = fadeIn(animationSpec = tween(durationMillis = 1000)),
+                        exit = fadeOut(animationSpec = tween(durationMillis = 850, easing = EaseInExpo))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(20.dp),
+                                imageVector = Icons.Rounded.Star,
+                                tint = if (task.priority == 0) Color.Transparent else if (task.priority == 1) Color(
+                                    0xFFFDFD96
+                                ) else if (task.priority == 2) Color(0xFFFF964F) else Color(
+                                    0xFFFF6961
+                                ),
+                                contentDescription = "Priority Icon"
                             )
-                        }
-                        val date = if(task.date == "") "" else viewModel.convertMillisToDate(task.date.toLong())
-                        val time = if(task.time == "") "" else viewModel.convertMillisToTime(task.time.toLong())
-                        if(date != "") {
-                            Text(
-                                text = "$date $time",
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(start = 5.dp)
+                            ) {
+                                Text(
+                                    text = task.taskName,
+                                    fontSize = 20.sp,
+                                )
+                                if (task.note != "") {
+                                    Text(
+                                        text = task.note,
 //                            text = "testing",
-                                fontSize = 12.sp,
-                                color = Color(0x8FFFFFFF)
-                            )
+                                        fontSize = 12.sp,
+                                        color = Color(0x8FFFFFFF)
+                                    )
+                                }
+                                val date =
+                                    if (task.date == "") "" else viewModel.convertMillisToDate(task.date.toLong())
+                                val time =
+                                    if (task.time == "") "" else viewModel.convertMillisToTime(task.time.toLong())
+                                if (date != "") {
+                                    Text(
+                                        text = "$date $time",
+                                        fontSize = 12.sp,
+                                        color = Color(0x8FFFFFFF)
+                                    )
+                                }
+                            }
+                            LottieAnimation(
+                                modifier = Modifier
+                                    .background(Color.Black)
+                                    .size(25.dp)
+                                    .clickable(
+                                        interactionSource = interactionSource,
+                                        indication = null,
+                                        onClick = {
+                                            isPlaying = true
+                                            onEvent(TaskEvent.DeleteTask(task))
+//                                            viewModel.cancelNotification(getNotificationTitle(), context = context)
+                                            // New
+//                                            viewModel.cancelNotification(task.taskName, context = context)
+                                        }
+                                    ),
+                                composition = composition,
+                                progress = { progress },
+
+                                )
                         }
                     }
-//                    Column
-//                        modifier = Modifier
-//                            .weight(1f)
-//                    ){
-//                        Text(
-//                            text = "${task.taskName} ${task.note}",
-//                            fontSize = 20.sp
-//                        )
-//                        val date = if(task.date == "") "" else viewModel.convertMillisToDate(task.date.toLong())
-//                        val time = if(task.time == "") "" else viewModel.convertMillisToTime(task.time.toLong())
-//                        Text(
-//                            text = "$date $time",
-////                            text = "testing",
-//                            fontSize = 12.sp
-//                        )
-//                    }
-                    LottieAnimation(
-                        modifier = Modifier
-                            .background(Color.Black)
-                            .size(25.dp)
-                            .clickable {
-                                isPlaying = true
-                            },
-                        composition = composition,
-                        progress = { progress },
-
-                    )
-//                    IconButton(onClick = {
-//                        onEvent(TaskEvent.DeleteTask(task))
-//                    }) {
-//                        Icon(
-//                            imageVector = Icons.Default.Delete,
-//                            contentDescription = "Delete Task"
-//                        )
-//                    }
                 }
             }
         }

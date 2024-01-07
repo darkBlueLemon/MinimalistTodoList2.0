@@ -52,12 +52,15 @@ class NotificationService (
         )
     }
 
+    private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
     @SuppressLint("ScheduleExactAlarm")
     fun scheduleNotification(title: String, message: String, time: Long) {
         Log.d("MYTAG","scheduler called")
         val intent = Intent(context, NotificationReceiver::class.java)
         intent.putExtra(titleExtra, title)
         intent.putExtra(messageExtra, message)
+//        intent.putExtra(timeExtra, time)
 
 //        val pendingIntent = PendingIntent.getBroadcast(
 //            context,
@@ -72,33 +75,6 @@ class NotificationService (
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        // converting time in millis from utc to local time
-        // doesnt work for api < 26
-//        val localDateTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            Instant.ofEpochMilli(time)
-//                .atZone(ZoneId.systemDefault())
-//                .toLocalDateTime()
-//        } else {
-//            TODO("VERSION.SDK_INT < O")
-//        }
-
-        // Convert LocalDateTime to milliseconds
-//        val localDateTimeMillis = localDateTime.atZone()
-//            .toInstant()
-//            .toEpochMilli()
-
-//        val timeFormat = android.text.format.Time()
-//        timeFormat.set(time + TimeZone.getDefault().getOffset(time) )
-//        timeFormat = timeFormat.toMillis(true)
-
-
-
-        // time in millis
-//        val time = time
-//        val time = 1704357640000
-//        Log.d("MYTAG",localDateTimeMillis.toString())
         Log.d("MYTAG","received time = $time")
         val offsetTime = time - TimeZone.getDefault().getOffset(time)
         Log.d("MYTAG", "offsetTime = $offsetTime")
@@ -107,7 +83,35 @@ class NotificationService (
             offsetTime,
             pendingIntent
         )
+//        try {
+//            alarmManager.setExactAndAllowWhileIdle(
+//                AlarmManager.RTC_WAKEUP,
+//                offsetTime,
+//                pendingIntent
+//            )
+//        } catch (e: Exception) {
+//            Log.d("MYTAG", e.toString())
+//        }
+//        val intervalMillis = 60 * 1000L
+//        alarmManager.setRepeating(
+//            AlarmManager.RTC_WAKEUP,
+//            offsetTime,
+//            intervalMillis,
+//            pendingIntent,
+//        )
         Log.d("MYTAG", "alarm set")
+    }
+
+    fun cancelAlarm(message: String) {
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            message.hashCode(),
+            Intent(context, NotificationReceiver::class.java),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        alarmManager.cancel(
+            pendingIntent
+        )
     }
 
     companion object {
