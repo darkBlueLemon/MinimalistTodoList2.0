@@ -313,8 +313,9 @@ fun AddTaskDialog(
                                 if (state.date.isNotBlank()) viewModel.callNotificationScheduler(
 //                                    state.taskName,
                                     getNotificationTitle(),
-                                    state.note,
-                                    context
+                                    state.taskName,
+                                    context,
+                                    state.priority
                                 )
                                 viewModel.setDate("")
                             }

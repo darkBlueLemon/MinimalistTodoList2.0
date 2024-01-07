@@ -63,14 +63,14 @@ class AddTaskViewModel: ViewModel() {
         return _date.toLong() + time.toLong()
     }
 
-    fun callNotificationScheduler(title: String, message: String, context: Context){
+    fun callNotificationScheduler(title: String, message: String, context: Context, priority: Int){
         Log.d("MYTAG", "call notification scheduler from addTaskViewModel")
         val notificationService = NotificationService(context = context)
-        notificationService.scheduleNotification(title, message, getTimeAndDateAsMillis())
+        notificationService.scheduleNotification(title, message, getTimeAndDateAsMillis(), priority)
     }
-//
-//    fun cancelNotification(message: String, context: Context) {
-//        val notificationService = NotificationService(context = context)
-//        notificationService.cancelAlarm(message)
-//    }
+
+    fun cancelNotification(message: String, context: Context) {
+        val notificationService = NotificationService(context = context)
+        notificationService.cancelAlarm(message)
+    }
 }

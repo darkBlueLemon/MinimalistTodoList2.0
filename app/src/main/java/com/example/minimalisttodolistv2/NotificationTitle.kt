@@ -6,7 +6,11 @@ class NotificationTitle {
             "Your father in law will finish it?",
             "Do the stoopid task noob",
             "What you waiting for?",
-            "It won't complete on its own uk"
+            "It won't complete on its own uk",
+            "titleOne",
+            "titleTwo",
+            "titleThree",
+            "titleFour"
         )
 
         private val safeStringList = listOf(
@@ -14,7 +18,7 @@ class NotificationTitle {
         )
 
         fun getNotificationTitle(): String {
-            return safeStringList.random()
+            return notSafeStringList.random()
         }
     }
 }

@@ -55,12 +55,13 @@ class NotificationService (
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     @SuppressLint("ScheduleExactAlarm")
-    fun scheduleNotification(title: String, message: String, time: Long) {
+    fun scheduleNotification(title: String, message: String, time: Long, priority: Int) {
         Log.d("MYTAG","scheduler called")
         val intent = Intent(context, NotificationReceiver::class.java)
         intent.putExtra(titleExtra, title)
         intent.putExtra(messageExtra, message)
-//        intent.putExtra(timeExtra, time)
+        intent.putExtra(timeExtra, time)
+        intent.putExtra(priorityExtra, priority)
 
 //        val pendingIntent = PendingIntent.getBroadcast(
 //            context,
@@ -70,7 +71,7 @@ class NotificationService (
 //        )
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            title.hashCode(),
+            message.hashCode(),
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )

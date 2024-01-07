@@ -246,7 +246,7 @@ fun TaskScreen(
                                             onEvent(TaskEvent.DeleteTask(task))
 //                                            viewModel.cancelNotification(getNotificationTitle(), context = context)
                                             // New
-//                                            viewModel.cancelNotification(task.taskName, context = context)
+                                            viewModel.cancelNotification(task.taskName, context = context)
                                         }
                                     ),
                                 composition = composition,

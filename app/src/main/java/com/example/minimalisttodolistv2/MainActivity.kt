@@ -127,8 +127,8 @@ class MainActivity : ComponentActivity() {
                     Button(onClick = {
                         if(hasNotificationPermission) {
                             notificationService.showNotification(Counter.value)
-                            viewModel2.callNotificationScheduler("title", "message", applicationContext)
-                            notificationService.scheduleNotification("title","message", viewModel2.getTimeAndDateAsMillis())
+//                            viewModel2.callNotificationScheduler("title", "message", applicationContext)
+//                            notificationService.scheduleNotification("title","message", viewModel2.getTimeAndDateAsMillis())
                         }
                     }) {
                         Text(text = "Send Notification")
