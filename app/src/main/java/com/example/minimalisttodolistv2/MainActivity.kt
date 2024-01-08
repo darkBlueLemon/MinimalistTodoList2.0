@@ -1,6 +1,8 @@
 package com.example.minimalisttodolistv2
 
 import android.Manifest
+import android.app.NotificationManager
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -80,6 +82,10 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
 
+        // Cancel all notifications
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancelAll();
+
         // Fullscreen
         getWindow().setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -89,6 +95,7 @@ class MainActivity : ComponentActivity() {
 
         // can be removed
         val notificationService = NotificationService(applicationContext)
+
 
         setContent {
             MinimalistTodoListV2Theme {
@@ -112,6 +119,15 @@ class MainActivity : ComponentActivity() {
                         hasNotificationPermission = isGranted
                     }
                 )
+
+
+
+                LaunchedEffect(key1 = true) {
+                    delay(1000)
+                    if (!hasNotificationPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    }
+                }
                 Column (
                     modifier = Modifier,
                     verticalArrangement = Arrangement.Center,

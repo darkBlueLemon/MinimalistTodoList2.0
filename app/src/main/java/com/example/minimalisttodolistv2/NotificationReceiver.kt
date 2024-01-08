@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.example.minimalisttodolistv2.NotificationTitle.Companion.getNotificationTitle
 
 // Changed
 const val titleExtra = "title extra"
@@ -31,16 +32,26 @@ class NotificationReceiver: BroadcastReceiver() {
 //            PendingIntent.FLAG_UPDATE_CURRENT
 //        )
 
+        // Create an explicit intent for an Activity in your app.
+        val intent2 = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+//        val intent2 = Intent(context, MainActivity::class.java)
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 3, intent2, PendingIntent.FLAG_IMMUTABLE)
+//        val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 3, intent2, PendingIntent.FLAG_IMMUTABLE)
+
         // Changed
         val notification = NotificationCompat.Builder(context, NotificationService.COUNTER_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle(intent?.getStringExtra(titleExtra))
             .setContentText(intent?.getStringExtra(messageExtra))
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true) // This will make the notification disappear when clicked
+            .setContentTitle(getNotificationTitle())
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .build()
+//            .setContentTitle(intent?.getStringExtra(titleExtra))
 //            .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
 //            .setContentIntent(pendingIntent) // Set the pending intent here
-//            .setAutoCancel(true) // This will make the notification disappear when clicked
-            .build()
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 //        notificationManager.notify(
@@ -68,12 +79,6 @@ class NotificationReceiver: BroadcastReceiver() {
             0 -> {
                 intervalMillis = 75 * 1000L
             }
-        }
-
-        if (true) {
-            print("fsd")
-        } else if (true) {
-            print("fdsf")
         }
 
         val notificationService = NotificationService(context = context)
