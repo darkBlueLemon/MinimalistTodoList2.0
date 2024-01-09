@@ -18,6 +18,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -182,9 +185,8 @@ fun AddTaskDialog(
                             singleLine = true,
                         )
                         ReadonlyTextField(
-                            value = if (viewModel.date != "") viewModel.convertMillisToDate(
-                                viewModel.date.toLong()
-                            ) else viewModel.date,
+//                            value = if (viewModel.date != "") viewModel.convertMillisToDate(viewModel.date.toLong()) else viewModel.date,
+                            value = if (viewModel.date != "") convertMillisToDate(viewModel.date.toLong()) else viewModel.date,
 //                            value = viewModel.date,
                             onValueChange = {},
                             onClick = {
@@ -238,7 +240,8 @@ fun AddTaskDialog(
                                 ) {
                                     Icon(
                                         painter = painterResource(id = if (prioritySelected == 3) R.drawable.task_priority_selected_icon else R.drawable.task_priority_unselected_icon),
-                                        tint = Color(0xFFFF6961),
+                                        tint = Color(0xFFFF5147),
+//                                        tint = Color(0xFF002014),
                                         contentDescription = "Close Settings",
                                         modifier = Modifier
                                             .clickable(
@@ -249,6 +252,21 @@ fun AddTaskDialog(
                                                     onEvent(TaskEvent.SetPriority(prioritySelected))
                                                 }
                                             )
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Outlined.Star,
+                                        contentDescription = "",
+                                        modifier = Modifier
+                                            .clickable(
+                                                interactionSource = interactionSource,
+                                                indication = null,
+                                                onClick = {
+                                                    prioritySelected = 3
+                                                    onEvent(TaskEvent.SetPriority(prioritySelected))
+                                                }
+                                            ),
+//                                            .size(18.dp),
+                                        tint = Color(0xFFFF5147),
                                     )
                                     Icon(
                                         painter = painterResource(id = if (prioritySelected == 2) R.drawable.task_priority_selected_icon else R.drawable.task_priority_unselected_icon),

@@ -42,7 +42,7 @@ class TaskViewModel(
         when(event){
             is TaskEvent.DeleteTask -> {
                 viewModelScope.launch {
-                    delay(850)
+                    delay(900)
                     dao.deleteTask(event.task)
                 }
             }

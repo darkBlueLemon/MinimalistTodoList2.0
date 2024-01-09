@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -33,6 +34,7 @@ import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -47,9 +49,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
@@ -84,7 +90,6 @@ class MainActivity : ComponentActivity() {
 
         // Cancel all notifications
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancelAll();
 
         // Fullscreen
         getWindow().setFlags(
@@ -151,10 +156,13 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
+                // Delete Notifications
+                deleteNotification(context = context, notificationManager = notificationManager)
+
 
                 // Calling TaskScreen
                 val state by viewModel.state.collectAsState()
-                TaskScreen(state = state, onEvent = viewModel::onEvent, viewModel = viewModel2, context = context)
+                TaskScreen(state = state, onEvent = viewModel::onEvent, viewModel = viewModel2, context = context, notificationManager = notificationManager)
 
             }
         }
@@ -170,6 +178,23 @@ class MainActivity : ComponentActivity() {
 //        notificationManager.notify(1, notification)
 //    }
 
+}
+
+@Composable
+fun deleteNotification(context: Context, notificationManager: NotificationManager, lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current) {
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { source, event ->
+            if(event == Lifecycle.Event.ON_RESUME) {
+                Log.d("MYTAG","On Resume")
+                notificationManager.cancelAll();
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

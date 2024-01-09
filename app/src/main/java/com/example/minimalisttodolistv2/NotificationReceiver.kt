@@ -1,5 +1,7 @@
 package com.example.minimalisttodolistv2
 
+import android.app.Notification
+import android.app.Notification.InboxStyle
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
@@ -22,16 +24,6 @@ class NotificationReceiver: BroadcastReceiver() {
 //        val service = NotificationService(context)
 //        service.showNotification(++Counter.value)
 
-//        val notificationIntent = Intent(context, MainActivity::class.java)
-//        notificationIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-//
-//        val pendingIntent = PendingIntent.getActivity(
-//            context,
-//            666,
-//            notificationIntent,
-//            PendingIntent.FLAG_UPDATE_CURRENT
-//        )
-
         // Create an explicit intent for an Activity in your app.
         val intent2 = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -39,6 +31,10 @@ class NotificationReceiver: BroadcastReceiver() {
 //        val intent2 = Intent(context, MainActivity::class.java)
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 3, intent2, PendingIntent.FLAG_IMMUTABLE)
 //        val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 3, intent2, PendingIntent.FLAG_IMMUTABLE)
+
+        // Grouping Notifications together
+        val SUMMARY_ID = 0
+        val GROUP_KEY = "com.android.minimalisttodolistv2_TASK"
 
         // Changed
         val notification = NotificationCompat.Builder(context, NotificationService.COUNTER_CHANNEL_ID)
@@ -48,16 +44,43 @@ class NotificationReceiver: BroadcastReceiver() {
             .setContentTitle(getNotificationTitle())
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setGroup(GROUP_KEY)
             .build()
-//            .setContentTitle(intent?.getStringExtra(titleExtra))
-//            .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
-//            .setContentIntent(pendingIntent) // Set the pending intent here
+
+        val summaryNotification = NotificationCompat.Builder(context, NotificationService.COUNTER_CHANNEL_ID)
+            .setContentText("")
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true) // This will make the notification disappear when clicked
+            .setContentTitle("")
+            // Set content text to support devices running API level < 24.
+            .setSmallIcon(R.drawable.task_priority_selected_icon)
+            // Build summary info into InboxStyle template.
+            .setStyle(NotificationCompat.InboxStyle()
+                .addLine("")
+                .addLine("")
+                .setBigContentTitle("")
+                .setSummaryText(""))
+//            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            // Specify which group this notification belongs to.
+            .setGroup(GROUP_KEY)
+            // Set this notification as the summary for the group.
+            .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+            .setGroupSummary(true)
+            .build()
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 //        notificationManager.notify(
 //            1,
 //            notification
 //        )
+        // Calling summary notification
+        notificationManager.notify(
+//            (intent?.getStringExtra(messageExtra).hashCode()).hashCode(),
+            456,
+            summaryNotification
+        )
+
+        // Calling lone notification
         notificationManager.notify(
             intent?.getStringExtra(messageExtra).hashCode(),
             notification
