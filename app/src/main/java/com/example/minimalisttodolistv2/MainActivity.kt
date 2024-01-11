@@ -46,11 +46,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
@@ -61,7 +59,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.example.minimalisttodolistv2.ui.theme.MinimalistTodoListV2Theme
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
 
@@ -88,13 +85,16 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
 
+        // Creating shared prefs
+        PreferencesManager.initialize(this)
+
         // Cancel all notifications
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         // Fullscreen
-        getWindow().setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getWindow().setFlags(
+//            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//            WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         super.onCreate(savedInstanceState)
 
@@ -156,9 +156,14 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
+                // Bday Manager
+//                if(!PreferencesManager.hasBdayNotifierBeenCalled) {
+//                    notificationService.scheduleBdayNotification()
+//                    PreferencesManager.hasBdayNotifierBeenCalled = true
+//                }
+
                 // Delete Notifications
                 deleteNotification(context = context, notificationManager = notificationManager)
-
 
                 // Calling TaskScreen
                 val state by viewModel.state.collectAsState()
@@ -167,17 +172,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-//    private fun showNotification() {
-//        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-//        val notification = NotificationCompat.Builder(applicationContext, NotificationService.COUNTER_CHANNEL_ID)
-//            .setContentTitle("123456789 123456789 123456789")
-//            .setContentText("Content Text fjsdklf asdfjdsk fkds fjasdkj f")
-//            .setSmallIcon(R.drawable.ic_launcher_foreground)
-//            .build()
-//        notificationManager.notify(1, notification)
-//    }
-
 }
 
 @Composable

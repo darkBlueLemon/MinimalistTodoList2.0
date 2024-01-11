@@ -1,7 +1,5 @@
 package com.example.minimalisttodolistv2
 
-import android.app.Notification
-import android.app.Notification.InboxStyle
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
@@ -37,7 +35,7 @@ class NotificationReceiver: BroadcastReceiver() {
         val GROUP_KEY = "com.android.minimalisttodolistv2_TASK"
 
         // Changed
-        val notification = NotificationCompat.Builder(context, NotificationService.COUNTER_CHANNEL_ID)
+        val notification = NotificationCompat.Builder(context, NotificationService.TODOLIST_CHANNEL_ID)
             .setContentText(intent?.getStringExtra(messageExtra))
             .setContentIntent(pendingIntent)
             .setAutoCancel(true) // This will make the notification disappear when clicked
@@ -47,7 +45,7 @@ class NotificationReceiver: BroadcastReceiver() {
             .setGroup(GROUP_KEY)
             .build()
 
-        val summaryNotification = NotificationCompat.Builder(context, NotificationService.COUNTER_CHANNEL_ID)
+        val summaryNotification = NotificationCompat.Builder(context, NotificationService.TODOLIST_CHANNEL_ID)
             .setContentText("")
             .setContentIntent(pendingIntent)
             .setAutoCancel(true) // This will make the notification disappear when clicked
@@ -102,6 +100,16 @@ class NotificationReceiver: BroadcastReceiver() {
             0 -> {
                 intervalMillis = 75 * 1000L
             }
+            9 -> {
+                intervalMillis = 5 * 1000L
+            }
+        }
+
+        if(priority == 9) {
+            val notificationService = NotificationService(context = context)
+            notificationService.scheduleBdayNotification()
+            Log.d("MYTAG", "called bday notifier")
+            return
         }
 
         val notificationService = NotificationService(context = context)

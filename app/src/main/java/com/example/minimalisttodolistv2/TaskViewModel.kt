@@ -18,7 +18,10 @@ class TaskViewModel(
     private val dao: TaskDao
 ): ViewModel() {
 
-    private val _sortType = MutableStateFlow(SortType.ALPHABETICAL)
+//    private val _sortType = MutableStateFlow(SortType.PRIORITY)
+    val sortingOrder = if(PreferencesManager.sortingOrder == SortType.PRIORITY.toString()) SortType.PRIORITY else SortType.REMAINING_TIME
+
+    private val _sortType = MutableStateFlow(SortType.PRIORITY)
     private val _tasks = _sortType
         .flatMapLatest { sortType ->
             when(sortType){

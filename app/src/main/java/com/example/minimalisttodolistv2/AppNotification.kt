@@ -14,8 +14,8 @@ class AppNotification: Application() {
         Log.d("MYTAG","channel created")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                NotificationService.COUNTER_CHANNEL_ID,
-                "Channel_name",
+                NotificationService.TODOLIST_CHANNEL_ID,
+                NotificationService.TODOLIST_CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_HIGH
             )
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

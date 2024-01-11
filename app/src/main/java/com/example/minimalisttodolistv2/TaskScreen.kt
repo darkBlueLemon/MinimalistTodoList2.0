@@ -28,9 +28,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.with
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -84,7 +86,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun TaskScreen(
     state: TaskState,
@@ -99,22 +101,43 @@ fun TaskScreen(
     val themeColor = Color.Black
     val textColor = Color.White
 
+
     Scaffold(
         floatingActionButton = {
             Row(
                 modifier = Modifier
                     .padding(start = 35.dp)
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.End
             ) {
+//                FloatingActionButton(
+//                    modifier = Modifier
+//                        .clip(shape = RoundedCornerShape(percent = 7))
+//                        .background(Color.Black)
+//                        .clickable(
+//                            interactionSource = interactionSource,
+//                            indication = null
+//                        ) {}
+//                        .border(
+//                            width = 2.dp,
+//                            color = Color.White,
+//                            shape = RoundedCornerShape(percent = 25)
+//                        )
+//                    ,
+//                    containerColor = Color.Black,
+//                    contentColor = Color.White,
+//                    onClick = {
+//                        onEvent(TaskEvent.ShowSettingsDialog)
+//                }) {
+//                    Icon(
+//                        imageVector = Icons.Default.Settings,
+//                        contentDescription = "Settings"
+//                    )
+//                }
                 FloatingActionButton(
                     modifier = Modifier
                         .clip(shape = RoundedCornerShape(percent = 7))
                         .background(Color.Black)
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = null
-                        ) {}
                         .border(
                             width = 2.dp,
                             color = Color.White,
@@ -123,30 +146,23 @@ fun TaskScreen(
                     containerColor = Color.Black,
                     contentColor = Color.White,
                     onClick = {
-                        onEvent(TaskEvent.ShowSettingsDialog)
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = "Settings"
-                    )
-                }
-                FloatingActionButton(
-                    modifier = Modifier
-                        .clip(shape = RoundedCornerShape(percent = 7))
-                        .background(Color.Black)
-                        .border(
-                            width = 2.dp,
-                            color = Color.White,
-                            shape = RoundedCornerShape(percent = 25)
-                        ),
-                    containerColor = Color.Black,
-                    contentColor = Color.White,
-                    onClick = {
-                    onEvent(TaskEvent.ShowAddTaskDialog)
+//                    onEvent(TaskEvent.ShowAddTaskDialog)
                 }) {
                     Icon(
                         imageVector = Icons.Outlined.Add,
-                        contentDescription = "Add Task"
+                        contentDescription = "Add Task",
+                        modifier = Modifier
+                            .combinedClickable(
+                                onLongClick = {
+                                    Log.d("MYTAG", "long press on add task")
+                                    onEvent(TaskEvent.ShowSettingsDialog)
+                                }, onClick = {
+                                    Log.d("MYTAG", "click on add task")
+                                    onEvent(TaskEvent.ShowAddTaskDialog)
+                                },
+                                interactionSource = interactionSource,
+                                indication = null,
+                            )
                     )
                 }
             }
@@ -218,7 +234,9 @@ fun TaskScreen(
                                     .padding(start = 5.dp)
                             ) {
                                 Row (
-                                    modifier = Modifier.background(themeColor).fillMaxWidth(),
+                                    modifier = Modifier
+                                        .background(themeColor)
+                                        .fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {

@@ -6,17 +6,12 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import java.sql.Time
-import java.time.Instant
-import java.time.ZoneId
 import java.util.TimeZone
-import kotlin.concurrent.timer
 
 class NotificationService (
-    private val context: Context,
+    private val context: Context
 ){
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -34,7 +29,7 @@ class NotificationService (
             Intent(context, NotificationReceiver::class.java),
             PendingIntent.FLAG_IMMUTABLE
         )
-        val notification = NotificationCompat.Builder(context, NotificationService.COUNTER_CHANNEL_ID)
+        val notification = NotificationCompat.Builder(context, NotificationService.TODOLIST_CHANNEL_ID)
             .setContentTitle("123456789 123456789 123456789")
             .setContentText("$i Content Text fjsdklf asdfjdsk fkds fjasdkj f")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
@@ -84,22 +79,6 @@ class NotificationService (
             offsetTime,
             pendingIntent
         )
-//        try {
-//            alarmManager.setExactAndAllowWhileIdle(
-//                AlarmManager.RTC_WAKEUP,
-//                offsetTime,
-//                pendingIntent
-//            )
-//        } catch (e: Exception) {
-//            Log.d("MYTAG", e.toString())
-//        }
-//        val intervalMillis = 60 * 1000L
-//        alarmManager.setRepeating(
-//            AlarmManager.RTC_WAKEUP,
-//            offsetTime,
-//            intervalMillis,
-//            pendingIntent,
-//        )
         Log.d("MYTAG", "alarm set")
     }
 
@@ -116,6 +95,54 @@ class NotificationService (
     }
 
     companion object {
-        const val COUNTER_CHANNEL_ID = "todo_channel"
+        const val TODOLIST_CHANNEL_ID = "todo_channel"
+        const val TODOLIST_CHANNEL_NAME = "todo_list_notification_channel"
+    }
+
+
+    @SuppressLint("ScheduleExactAlarm")
+    fun scheduleBdayNotification() {
+
+        // Check if its been called 5 times using shared prefs
+        Log.d("MYTAG","oh no")
+        var count = PreferencesManager.bdayNotificationCount
+
+        Log.d("MYTAG", count.toString())
+        count++
+//        PreferencesManager.bdayNotificationCount = 0
+//        Log.d("MYTAG", count.toString())
+
+        val intent = Intent(context, NotificationReceiver::class.java)
+        intent.putExtra(titleExtra, "HAPPY BDAY!")
+        intent.putExtra(messageExtra, "What you waiting for open it")
+        intent.putExtra(timeExtra, "null")
+        intent.putExtra(priorityExtra, 9)
+
+        if(count >= 10) return
+        Log.d("MYTAG","went past the if statement")
+
+        Log.d("MYTAG","scheduler called")
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            "birthday_message".hashCode(),
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val time: Long  =1704831720000
+
+        Log.d("MYTAG","received time = $time")
+        val offsetTime = time - TimeZone.getDefault().getOffset(time)
+        Log.d("MYTAG", "offsetTime = $offsetTime")
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            offsetTime,
+            pendingIntent
+        )
+        Log.d("MYTAG", count.toString())
+
+
+        PreferencesManager.bdayNotificationCount = count
     }
 }

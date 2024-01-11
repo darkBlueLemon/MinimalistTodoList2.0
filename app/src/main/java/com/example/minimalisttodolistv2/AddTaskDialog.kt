@@ -55,6 +55,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.minimalisttodolistv2.NotificationTitle.Companion.getNotificationTitle
+import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
@@ -83,6 +84,28 @@ fun AddTaskDialog(
 //        runBlocking { delay(10) }
 //        focusRequester.requestFocus()
 //    }
+
+
+    // Hide Keyboard part 1
+    val controller = LocalSoftwareKeyboardController.current
+    controller?.show()
+
+    // Show Keyboard
+    val showKeyboard = remember { mutableStateOf(true) }
+    val focusRequester = remember { FocusRequester() }
+    val keyboard = LocalSoftwareKeyboardController.current
+
+// LaunchedEffect prevents endless focus request
+    LaunchedEffect(focusRequester) {
+        Log.d("MYTAG", "keyboard called outside")
+//        if (showKeyboard.equals(true)) {
+        if (true) {
+            delay(100) // Make sure you have delay here
+            Log.d("MYTAG", "keyboard called")
+            focusRequester.requestFocus()
+            keyboard?.show()
+        }
+    }
 
     AlertDialog(
         modifier = modifier,
@@ -131,6 +154,7 @@ fun AddTaskDialog(
 //                                focusRequester.requestFocus()
 //                                keyboardController?.showSoftwareKeyboard()
 //                            },
+                            modifier = Modifier.focusRequester(focusRequester),
                             value = state.taskName,
                             onValueChange = {
                                 onEvent(TaskEvent.SetTaskName(it))
@@ -254,21 +278,6 @@ fun AddTaskDialog(
                                             )
                                     )
                                     Icon(
-                                        imageVector = Icons.Outlined.Star,
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .clickable(
-                                                interactionSource = interactionSource,
-                                                indication = null,
-                                                onClick = {
-                                                    prioritySelected = 3
-                                                    onEvent(TaskEvent.SetPriority(prioritySelected))
-                                                }
-                                            ),
-//                                            .size(18.dp),
-                                        tint = Color(0xFFFF5147),
-                                    )
-                                    Icon(
                                         painter = painterResource(id = if (prioritySelected == 2) R.drawable.task_priority_selected_icon else R.drawable.task_priority_unselected_icon),
                                         tint = Color(0xFFFF964F),
                                         contentDescription = "Close Settings",
@@ -319,6 +328,7 @@ fun AddTaskDialog(
                     }
                 }
 
+
                 // Save Button
                 Box(
                     modifier = Modifier
@@ -336,6 +346,10 @@ fun AddTaskDialog(
                                     state.priority
                                 )
                                 viewModel.setDate("")
+
+                                // Hide Keyboard part 2
+                                controller?.hide()
+
                             }
                         )
                         .align(Alignment.CenterHorizontally)

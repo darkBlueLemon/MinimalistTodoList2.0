@@ -179,6 +179,7 @@ fun ChangeSettingsDialog(
                                     modifier = Modifier
                                         .clickable {
                                             onEvent(TaskEvent.SortTasks(SortType.PRIORITY))
+                                            PreferencesManager.sortingOrder = SortType.PRIORITY.toString()
                                             onEvent(TaskEvent.HideSettingsDialog)
                                         }
                                         .fillMaxWidth(),
@@ -201,6 +202,7 @@ fun ChangeSettingsDialog(
                                     modifier = Modifier
                                         .clickable {
                                             onEvent(TaskEvent.SortTasks(SortType.REMAINING_TIME))
+                                            PreferencesManager.sortingOrder = SortType.REMAINING_TIME.toString()
                                             onEvent(TaskEvent.HideSettingsDialog)
                                         }
                                         .fillMaxWidth(),
@@ -224,6 +226,7 @@ fun ChangeSettingsDialog(
                                     modifier = Modifier
                                         .clickable {
                                             onEvent(TaskEvent.SortTasks(SortType.ALPHABETICAL))
+                                            PreferencesManager.sortingOrder = SortType.ALPHABETICAL.toString()
                                             onEvent(TaskEvent.HideSettingsDialog)
                                         }
                                         .fillMaxWidth(),
@@ -246,6 +249,7 @@ fun ChangeSettingsDialog(
                                     modifier = Modifier
                                         .clickable {
                                             onEvent(TaskEvent.SortTasks(SortType.ALPHABETICAL_REV))
+                                            PreferencesManager.sortingOrder = SortType.ALPHABETICAL_REV.toString()
                                             onEvent(TaskEvent.HideSettingsDialog)
                                         }
                                         .fillMaxWidth(),
