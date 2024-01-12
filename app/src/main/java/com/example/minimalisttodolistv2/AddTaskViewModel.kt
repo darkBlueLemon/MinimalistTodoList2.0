@@ -60,7 +60,7 @@ class AddTaskViewModel: ViewModel() {
     }
 
     fun getTimeAndDateAsMillis(): Long {
-        return _date.toLong() + time.toLong()
+        return if(_date == "") Long.MAX_VALUE else _date.toLong() + time.toLong()
     }
 
     fun callNotificationScheduler(title: String, message: String, context: Context, priority: Int){

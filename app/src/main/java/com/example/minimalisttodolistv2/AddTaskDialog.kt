@@ -2,6 +2,7 @@ package com.example.minimalisttodolistv2
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -16,9 +17,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.AlertDialog
@@ -58,6 +62,7 @@ import com.example.minimalisttodolistv2.NotificationTitle.Companion.getNotificat
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import java.util.TimeZone
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -68,6 +73,8 @@ fun AddTaskDialog(
     viewModel: AddTaskViewModel,
     context: Context
 ) {
+
+    val textColor = Color.White
 
     // Clear date and time if the task wasn't added
     DisposableEffect(key1 = true){
@@ -117,7 +124,7 @@ fun AddTaskDialog(
             modifier = Modifier
                 .clip(shape = RoundedCornerShape(percent = 7))
                 .background(Color.Black)
-                .size(width = 350.dp, height = 400.dp)
+                .size(width = 350.dp, height = 360.dp)
                 .border(
                     width = 2.dp,
                     color = Color.White,
@@ -150,10 +157,6 @@ fun AddTaskDialog(
                         verticalArrangement = Arrangement.Top
                     ) {
                         TextField(
-//                            modifier = Modifier.focusRequester(focusRequester).onGloballyPositioned {
-//                                focusRequester.requestFocus()
-//                                keyboardController?.showSoftwareKeyboard()
-//                            },
                             modifier = Modifier.focusRequester(focusRequester),
                             value = state.taskName,
                             onValueChange = {
@@ -174,79 +177,31 @@ fun AddTaskDialog(
                                 disabledContainerColor = Color.Transparent,
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
+                                unfocusedTextColor = textColor,
+                                focusedTextColor = textColor,
+
                             ),
                             textStyle = LocalTextStyle.current.copy(
                                 fontWeight = customFontWeight,
                                 fontSize = MaterialTheme.typography.titleLarge.fontSize
                             ),
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Text,
-                                imeAction = ImeAction.Done,
-                                capitalization = KeyboardCapitalization.Sentences,
-                                autoCorrect = true,
-                            ),
+//                            keyboardOptions = KeyboardOptions(
+//                                keyboardType = KeyboardType.Text,
+//                                imeAction = ImeAction.Done,
+//                                capitalization = KeyboardCapitalization.Sentences,
+//                                autoCorrect = true,
+//                            ),
                         )
-                        TextField(
-                            value = state.note,
-                            onValueChange = {
-                                onEvent(TaskEvent.SetNote(it))
-                            },
-                            placeholder = {
-                                Text(
-                                    text = "Add note",
-                                    color = transparencyColor,
-                                    fontWeight = customFontWeight,
-                                    style = MaterialTheme.typography.bodySmall,
-                                )
-                            },
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                disabledContainerColor = Color.Transparent,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                            ),
-                            singleLine = true,
-                        )
-                        ReadonlyTextField(
-//                            value = if (viewModel.date != "") viewModel.convertMillisToDate(viewModel.date.toLong()) else viewModel.date,
-                            value = if (viewModel.date != "") convertMillisToDate(viewModel.date.toLong()) else viewModel.date,
-//                            value = viewModel.date,
-                            onValueChange = {},
-                            onClick = {
-                                viewModel.toggleDatePicker()
-                            },
-                            transparencyColor = transparencyColor,
-                            customFontWeight = customFontWeight,
-                            text = "Add date"
-                        )
-                        if (viewModel.isDatePickerEnabled) DatePicker(viewModel) {
-                            Log.e("MYTAG", "datepicker closed")
-                            viewModel.toggleDatePicker()
-                            onEvent(TaskEvent.SetDate(viewModel.date))
-                        }
-                        val selectedTime = viewModel.convertMillisToTime(viewModel.time.toLong())
-                        if(viewModel.date != "") {
-                            ReadonlyTextField(
-                                value = if (selectedTime == "00:00") "" else selectedTime,
-//                            value = viewModel.time,
-                                onValueChange = {},
-                                onClick = {
-                                    viewModel.toggleTimePicker()
-                                },
-                                transparencyColor = transparencyColor,
-                                customFontWeight = customFontWeight,
-                                text = "Add time"
-                            )
-                        }
-                        if (viewModel.isTimePickerEnabled) TimePicker(viewModel) {
-                            onEvent(TaskEvent.SetTime(viewModel.time))
-                        }
-
                         // Priority Selection
                         var isPrioritySelectionEnabled by remember {
                             mutableStateOf(false)
                         }
+
+//                        val selected_icon = if(PreferencesManager.starIcon) {
+//                            R.drawable.task_priority_selected_icon
+//                        } else {
+//
+//                        }
 
                         AnimatedContent(
                             targetState = isPrioritySelectionEnabled,
@@ -325,6 +280,86 @@ fun AddTaskDialog(
                                 )
                             }
                         }
+                        Row (
+                            modifier = Modifier.background(Color.Black).padding(start = 15.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            Icon(
+                                painter = painterResource(R.drawable.date_icon),
+                                tint = transparencyColor,
+                                contentDescription = "Close Settings",
+                            )
+                            TextField(
+                                value = state.note,
+                                onValueChange = {
+                                    onEvent(TaskEvent.SetNote(it))
+                                },
+                                placeholder = {
+                                    Text(
+                                        text = "Add note",
+                                        color = transparencyColor,
+                                        fontWeight = customFontWeight,
+                                        style = MaterialTheme.typography.bodySmall,
+                                    )
+                                },
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
+                                    disabledContainerColor = Color.Transparent,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    unfocusedTextColor = textColor,
+                                    focusedTextColor = textColor,
+                                ),
+                                singleLine = true,
+                                modifier = Modifier.background(Color.Black)
+                            )
+                        }
+                        Row (
+                            modifier = Modifier.background(Color.Black).padding(start = 15.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.time_icon),
+                                tint = transparencyColor,
+                                contentDescription = "Close Settings",
+                            )
+                            ReadonlyTextField(
+//                            value = if (viewModel.date != "") viewModel.convertMillisToDate(viewModel.date.toLong()) else viewModel.date,
+                                value = if (viewModel.date != "") convertMillisToDate(viewModel.date.toLong()) else viewModel.date,
+//                            value = viewModel.date,
+                                onValueChange = {},
+                                onClick = {
+                                    viewModel.toggleDatePicker()
+                                },
+                                transparencyColor = transparencyColor,
+                                customFontWeight = customFontWeight,
+                                text = "Add date"
+                            )
+                        }
+                        if (viewModel.isDatePickerEnabled) DatePicker(viewModel) {
+                            Log.e("MYTAG", "datepicker closed")
+                            viewModel.toggleDatePicker()
+                            onEvent(TaskEvent.SetDate(viewModel.date))
+                        }
+                        val selectedTime = viewModel.convertMillisToTime(viewModel.time.toLong())
+                        if(viewModel.date != "") {
+                            ReadonlyTextField(
+                                value = if (selectedTime == "00:00") "" else selectedTime,
+//                            value = viewModel.time,
+                                onValueChange = {},
+                                onClick = {
+                                    viewModel.toggleTimePicker()
+                                },
+                                transparencyColor = transparencyColor,
+                                customFontWeight = customFontWeight,
+                                text = "Add time"
+                            )
+                        }
+                        if (viewModel.isTimePickerEnabled) TimePicker(viewModel) {
+                            onEvent(TaskEvent.SetTime(viewModel.time))
+                        }
+
                     }
                 }
 
@@ -336,20 +371,38 @@ fun AddTaskDialog(
                             interactionSource = interactionSource,
                             indication = null,
                             onClick = {
-                                onEvent(TaskEvent.SaveTask)
-                                // first place where alarm scheduler is called
-                                if (state.date.isNotBlank()) viewModel.callNotificationScheduler(
+                                // If a time is set in the past its just set to an hour later
+                                Log.d("MYTAG", System.currentTimeMillis().toString())
+                                Log.d("MYTAG", viewModel.getTimeAndDateAsMillis().toString())
+                                if (System.currentTimeMillis() + TimeZone.getDefault()
+                                        .getOffset(System.currentTimeMillis()) < viewModel.getTimeAndDateAsMillis()
+                                ) {
+                                } else if (state.taskName != "") {
+                                    Toast.makeText(
+                                        context,
+                                        "Will notify in an hour",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    viewModel.setDate(
+                                        (System.currentTimeMillis() + 60 * 60 * 1000L + TimeZone.getDefault()
+                                            .getOffset(System.currentTimeMillis())).toString()
+                                    )
+                                }
+                                if (state.taskName != "") {
+                                    onEvent(TaskEvent.SaveTask)
+                                    // first place where alarm scheduler is called
+                                    if (state.date.isNotBlank()) viewModel.callNotificationScheduler(
 //                                    state.taskName,
-                                    getNotificationTitle(),
-                                    state.taskName,
-                                    context,
-                                    state.priority
-                                )
-                                viewModel.setDate("")
+                                        getNotificationTitle(),
+                                        state.taskName,
+                                        context,
+                                        state.priority
+                                    )
+                                    viewModel.setDate("")
 
-                                // Hide Keyboard part 2
-                                controller?.hide()
-
+                                    // Hide Keyboard part 2
+                                    controller?.hide()
+                                }
                             }
                         )
                         .align(Alignment.CenterHorizontally)
@@ -403,6 +456,8 @@ fun ReadonlyTextField(
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
                 disabledTextColor = Color.Black,
+                unfocusedTextColor = Color.White,
+                focusedTextColor = Color.White,
             ),
             placeholder = {
                 Text(

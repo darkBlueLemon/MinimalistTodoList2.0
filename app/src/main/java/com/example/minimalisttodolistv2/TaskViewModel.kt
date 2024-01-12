@@ -19,9 +19,13 @@ class TaskViewModel(
 ): ViewModel() {
 
 //    private val _sortType = MutableStateFlow(SortType.PRIORITY)
-    val sortingOrder = if(PreferencesManager.sortingOrder == SortType.PRIORITY.toString()) SortType.PRIORITY else SortType.REMAINING_TIME
+    val sortOrderFromPrefs = PreferencesManager.sortingOrder
+    val sortingOrder = if(sortOrderFromPrefs == SortType.PRIORITY.toString()) SortType.PRIORITY
+    else if(sortOrderFromPrefs == SortType.REMAINING_TIME.toString()) SortType.REMAINING_TIME
+    else if(sortOrderFromPrefs == SortType.ALPHABETICAL.toString()) SortType.ALPHABETICAL
+    else SortType.ALPHABETICAL_REV
 
-    private val _sortType = MutableStateFlow(SortType.PRIORITY)
+    private val _sortType = MutableStateFlow(sortingOrder)
     private val _tasks = _sortType
         .flatMapLatest { sortType ->
             when(sortType){

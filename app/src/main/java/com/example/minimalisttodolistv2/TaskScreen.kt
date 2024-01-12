@@ -70,6 +70,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -97,7 +99,7 @@ fun TaskScreen(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
-    val customFontWeight = FontWeight.Light
+    val customFontWeight = if(PreferencesManager.thinFont) FontWeight.Light else FontWeight.Normal
     val themeColor = Color.Black
     val textColor = Color.White
 
@@ -110,30 +112,6 @@ fun TaskScreen(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-//                FloatingActionButton(
-//                    modifier = Modifier
-//                        .clip(shape = RoundedCornerShape(percent = 7))
-//                        .background(Color.Black)
-//                        .clickable(
-//                            interactionSource = interactionSource,
-//                            indication = null
-//                        ) {}
-//                        .border(
-//                            width = 2.dp,
-//                            color = Color.White,
-//                            shape = RoundedCornerShape(percent = 25)
-//                        )
-//                    ,
-//                    containerColor = Color.Black,
-//                    contentColor = Color.White,
-//                    onClick = {
-//                        onEvent(TaskEvent.ShowSettingsDialog)
-//                }) {
-//                    Icon(
-//                        imageVector = Icons.Default.Settings,
-//                        contentDescription = "Settings"
-//                    )
-//                }
                 FloatingActionButton(
                     modifier = Modifier
                         .clip(shape = RoundedCornerShape(percent = 7))
@@ -197,10 +175,11 @@ fun TaskScreen(
             LazyColumn(
 //                contentPadding = PaddingValues(40.dp),
                 modifier = Modifier
+//                    .background(Color.Magenta)
                     .background(themeColor)
                     .padding(start = 5.dp, end = 15.dp, bottom = 15.dp, top = 15.dp)
                     .fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 items(state.tasks) { task ->
                     // Lottie Animation
@@ -224,6 +203,7 @@ fun TaskScreen(
                         Row(
                             modifier = Modifier
                                 .background(themeColor)
+//                                .background(Color.White)
                                 .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
@@ -245,19 +225,32 @@ fun TaskScreen(
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.Center
                                     ) {
-                                        Icon(
-                                            modifier = Modifier
-                                                .size(18.dp)
-                                                .background(themeColor),
-                                            imageVector = Icons.Rounded.Star,
-                                            tint = if (task.priority == 0) Color.Transparent else if (task.priority == 1) Color(
-                                                0xFFFDFD96
-                                            ) else if (task.priority == 2) Color(0xFFFF964F) else Color(
-                                                0xFFFF5147
+                                        if(PreferencesManager.starIcon) {
+                                            Icon(
+                                                modifier = Modifier
+                                                    .size(18.dp)
+                                                    .background(themeColor),
+                                                imageVector = Icons.Rounded.Star,
+                                                tint = if (task.priority == 0) Color.Transparent else if (task.priority == 1) Color(
+                                                    0xFFFDFD96
+                                                ) else if (task.priority == 2) Color(0xFFFF964F) else Color(
+                                                    0xFFFF5147
 //                                                0xFFFF6961
-                                            ),
-                                            contentDescription = "Priority Icon"
-                                        )
+                                                ),
+                                                contentDescription = "Priority Icon"
+                                            )
+                                        } else {
+                                            Icon(
+                                                painter = painterResource(R.drawable.task_priority_selected_icon3),
+                                                tint = if (task.priority == 0) Color.Transparent else if (task.priority == 1) Color(
+                                                    0xFFFDFD96
+                                                ) else if (task.priority == 2) Color(0xFFFF964F) else Color(
+                                                    0xFFFF5147
+//                                                0xFFFF6961
+                                                ),
+                                                contentDescription = "Priority Icon",
+                                            )
+                                        }
                                         Text(
                                             text = task.taskName,
                                             fontSize = 20.sp,
@@ -307,21 +300,35 @@ fun TaskScreen(
                                     ) {
                                         Spacer(
                                             modifier = Modifier.size(
-                                                width = 23.dp,
+                                                width = if(PreferencesManager.starIcon) 23.dp else 15.dp,
                                                 height = 0.dp
                                             )
                                         )
                                         val dateTimeText = if (isDateToday(task.date.toLong())) "Today $time"  else if(isDateTomorrow(task.date.toLong())) "Tomorrow $time" else if(isDateYesterday(task.date.toLong())) "Yesterday $time" else "$humanFormatDate $time"
                                         val noteText = if(task.note == "") "" else if(task.time != "" ) " | " + task.note else "| " + task.note
-                                        Text(
-                                            text = dateTimeText + noteText,
-                                            fontSize = 12.sp,
+                                        Row (
+                                            modifier = Modifier
+                                        ){
+                                            Text(
+                                                text = dateTimeText,
+                                                fontSize = 12.sp,
 //                                        color = Color(0x8FFFFFFF)
-                                            color = textColor,
+                                                color = textColor,
 //                                            fontWeight = customFontWeight,
-                                            fontWeight = FontWeight.W300,
-                                        )
+                                                fontWeight = FontWeight.W300,
+                                            )
+                                            Text(
+                                                text = noteText,
+                                                fontSize = 12.sp,
+                                                color = Color(0x8FFFFFFF),
+//                                                color = textColor,
+//                                            fontWeight = customFontWeight,
+                                                fontWeight = FontWeight.W300,
+                                            )
+                                        }
                                     }
+                                } else {
+                                    Text(text = "", fontSize = 5.sp)
                                 }
                             }
                         }

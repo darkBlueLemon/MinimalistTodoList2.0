@@ -18,7 +18,9 @@ interface TaskDao {
     @Query("SELECT * FROM task ORDER BY priority DESC, date ASC")
     fun getTasksOrderedByPriority(): Flow<List<Task>>
 
-    @Query("SELECT * FROM task ORDER BY date ASC, time ASC")
+//    @Query("SELECT * FROM task ORDER BY date ASC, time ASC")
+//    @Query("SELECT * FROM task WHERE date<> '' ORDER ")
+    @Query("SELECT * FROM task ORDER BY CASE WHEN date = '' THEN 1 ELSE 0 END, date ASC, time ASC")
     fun getTasksOrderedByRemainingTime(): Flow<List<Task>>
 
     @Query("SELECT * FROM task ORDER BY taskName ASC")

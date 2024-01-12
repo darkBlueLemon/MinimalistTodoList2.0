@@ -18,7 +18,7 @@ class NotificationTitle {
         )
 
         fun getNotificationTitle(): String {
-            return notSafeStringList.random()
+            return if (PreferencesManager.boringNotification) safeStringList.random() else notSafeStringList.random()
         }
     }
 }

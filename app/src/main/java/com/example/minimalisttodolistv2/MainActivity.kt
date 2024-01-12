@@ -19,8 +19,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -203,34 +205,15 @@ fun DatePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
                     .clip(shape = RoundedCornerShape(percent = 7)),
             colors = DatePickerDefaults.colors(
                 containerColor = Color.Black,
-//                titleContentColor = Color.White,
-//                headlineContentColor = Color.White,
-//                weekdayContentColor = Color.Green,
-//                subheadContentColor = Color.Magenta,
-//
-//                yearContentColor = Color.White,
-//                currentYearContentColor = Color.White,
-//                selectedYearContentColor = Color.White,
-//                selectedYearContainerColor = Color.White,
-//
-//                dayContentColor = Color.White,
-//                disabledDayContentColor = Color.Yellow,
-//                selectedDayContentColor = Color.Red,
-//                disabledSelectedDayContentColor = Color.Red,
-//                selectedDayContainerColor = Color.White,
-//                disabledSelectedDayContainerColor = Color.Red,
-//
-//                todayContentColor = Color.Transparent,
-//                todayDateBorderColor = Color.Green,
-//
-//                dayInSelectionRangeContentColor = Color.Red,
-//                dayInSelectionRangeContainerColor = Color.Red
             ),
             onDismissRequest = {
                 openDialog.value = false
+                viewModel.setDate("")
                 onClickAction.invoke()
+                Log.d("MYTAG","dismiss request")
             },
             confirmButton = {
+                Log.d("MYTAG","confirm")
 //                TextButton(
 //                    onClick = {
 //                        openDialog.value = false
@@ -241,14 +224,7 @@ fun DatePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
 //                }
             },
             dismissButton = {
-//                TextButton(
-//                    onClick = {
-//                        openDialog.value = false
-//                        onClickAction.invoke()
-//                    }
-//                ) {
-//                    Text("CANCEL")
-//                }
+                            Log.d("MYTAG","dismiss")
             },
         ) {
             Box(
@@ -256,8 +232,8 @@ fun DatePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
                     .align(Alignment.CenterHorizontally)
                     .clip(shape = RoundedCornerShape(percent = 7))
                     .background(Color.Black)
-                    .padding(2.dp)
-//                    .size(width = 350.dp, height = 600.dp)
+                    .padding(start = 10.dp, end = 10.dp)
+//                    .size(width = 350.dp, height = 700.dp)
                     .border(
                         width = 2.dp,
                         color = Color.White,
@@ -270,14 +246,18 @@ fun DatePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
 
                 ) {
                     androidx.compose.material3.DatePicker(
-//                        modifier = Modifier.background(Color.Yellow),
+                        modifier = Modifier
+                            .background(Color.Black)
+//                            .padding(10.dp)
+//                            .fillMaxSize(),
+                                ,
                         state = state,
                         colors = DatePickerDefaults.colors(
                             containerColor = Color.Black,
                             titleContentColor = Color.White,
                             headlineContentColor = Color.White,
                             weekdayContentColor = Color.White,
-                            subheadContentColor = Color.Magenta,
+                            subheadContentColor = Color.White,
 
                             yearContentColor = Color.White,
                             currentYearContentColor = Color.White,
@@ -285,28 +265,33 @@ fun DatePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
                             selectedYearContainerColor = Color.White,
 
                             dayContentColor = Color.White,
-                            disabledDayContentColor = Color.Yellow,
+                            disabledDayContentColor = Color.White,
                             selectedDayContentColor = Color.Black,
-                            disabledSelectedDayContentColor = Color.Red,
+                            disabledSelectedDayContentColor = Color.White,
                             selectedDayContainerColor = Color.White,
-                            disabledSelectedDayContainerColor = Color.Red,
+                            disabledSelectedDayContainerColor = Color.White,
 
                             todayContentColor = Color.White,
                             todayDateBorderColor = Color.White,
 
-                            dayInSelectionRangeContentColor = Color.Red,
-                            dayInSelectionRangeContainerColor = Color.Red
+                            dayInSelectionRangeContentColor = Color.White,
+                            dayInSelectionRangeContainerColor = Color.White,
+
                         )
                     )
                     Row(
                         modifier = Modifier
+                            .background(Color.Black)
                             .fillMaxWidth()
+//                            .fillMaxSize()
+                            .size(100.dp)
                             .padding(bottom = 20.dp, end = 20.dp),
                         horizontalArrangement = Arrangement.End
                     ){
                         TextButton(
                             onClick = {
                                 openDialog.value = false
+                                viewModel.setDate("")
                                 onClickAction.invoke()
                             }
                         ) {
@@ -380,7 +365,7 @@ fun TimePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
                         .align(Alignment.CenterHorizontally)
                         .clip(shape = RoundedCornerShape(percent = 7))
                         .background(Color.Black)
-//                    .size(width = 350.dp, height = 600.dp)
+                        .size(width = 350.dp, height = 480.dp)
                         .border(
                             width = 2.dp,
                             color = Color.White,
@@ -388,7 +373,7 @@ fun TimePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
                         )
                         .padding(20.dp)
                         ,
-//            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center
                 ) {
                     Column (
                         modifier = Modifier,

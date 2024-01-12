@@ -52,7 +52,8 @@ fun MinimalistTodoListV2Theme(
         }
 
         darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+//        else -> LightColorScheme
+        else -> DarkColorScheme
     }
     val view = LocalView.current
     if (!view.isInEditMode) {
