@@ -73,4 +73,15 @@ class AddTaskViewModel: ViewModel() {
         val notificationService = NotificationService(context = context)
         notificationService.cancelAlarm(message)
     }
+
+
+    // Bday
+    var enableBday: Boolean = false
+        get() = field
+        set(value) {
+            field = value
+        }
+    fun toggleBday(flag: Boolean) {
+
+    }
 }

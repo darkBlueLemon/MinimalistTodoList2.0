@@ -2,6 +2,8 @@ package com.example.minimalisttodolistv2
 
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
+import android.service.autofill.OnClickAction
 import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Down
@@ -27,6 +29,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.animation.with
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -56,11 +59,13 @@ import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -73,6 +78,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.getSystemService
@@ -82,11 +88,14 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.minimalisttodolistv2.NotificationTitle.Companion.getNotificationTitle
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -102,7 +111,6 @@ fun TaskScreen(
     val customFontWeight = if(PreferencesManager.thinFont) FontWeight.Light else FontWeight.Normal
     val themeColor = Color.Black
     val textColor = Color.White
-
 
     Scaffold(
         floatingActionButton = {
@@ -124,7 +132,6 @@ fun TaskScreen(
                     containerColor = Color.Black,
                     contentColor = Color.White,
                     onClick = {
-//                    onEvent(TaskEvent.ShowAddTaskDialog)
                 }) {
                     Icon(
                         imageVector = Icons.Outlined.Add,
@@ -132,10 +139,8 @@ fun TaskScreen(
                         modifier = Modifier
                             .combinedClickable(
                                 onLongClick = {
-                                    Log.d("MYTAG", "long press on add task")
                                     onEvent(TaskEvent.ShowSettingsDialog)
                                 }, onClick = {
-                                    Log.d("MYTAG", "click on add task")
                                     onEvent(TaskEvent.ShowAddTaskDialog)
                                 },
                                 interactionSource = interactionSource,
@@ -151,184 +156,212 @@ fun TaskScreen(
             AddTaskDialog(state = state, onEvent = onEvent, viewModel = viewModel, context = LocalContext.current)
         }
         if(state.isChangingSettings){
-            ChangeSettingsDialog(state = state, onEvent = onEvent, viewModel = viewModel)
+            AnimatedVisibility(visible = state.isChangingSettings) {
+                ChangeSettingsDialog(
+                    state = state,
+                    onEvent = onEvent,
+                    viewModel = viewModel,
+                    modifier = Modifier.animateEnterExit(enter = fadeIn(tween(5000)))
+                )
+            }
         }
 
-        AnimatedContent(
-            targetState = state.tasks,
-            transitionSpec = {
-                fadeOut(animationSpec = tween(durationMillis = 850, easing = EaseInExpo) )
-                             slideIntoContainer(
-                                 animationSpec = tween(0, easing = EaseIn),
-                                 towards = Up
-                             ).with(
-                                 slideOutOfContainer(
-                                     animationSpec = tween(0, easing = EaseOut),
-                                     towards = Down
-                                 )
-                             )
-            },
-            label = "",
+        LazyColumn(
+            modifier = Modifier
+                .background(Color.Magenta)
+                .background(themeColor)
+                .padding(start = 5.dp, end = 15.dp, bottom = 15.dp, top = 15.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Text(text = it.toString())
-
-            LazyColumn(
-//                contentPadding = PaddingValues(40.dp),
-                modifier = Modifier
-//                    .background(Color.Magenta)
-                    .background(themeColor)
-                    .padding(start = 5.dp, end = 15.dp, bottom = 15.dp, top = 15.dp)
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                items(state.tasks) { task ->
-                    // Lottie Animation
-                    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.task_complete_animation))
-                    var isPlaying by remember {
-                        mutableStateOf(false)
-                    }
-                    val progress by animateLottieCompositionAsState(
-                        composition = composition,
-                        isPlaying = isPlaying,
-                        speed = 4f,
-                    )
-
-                    // Animate visibility for each item
-                    AnimatedVisibility(
-//                        visible = true, // Change this to control the visibility
-                        visible = !isPlaying, // Change this to control the visibility
-//                        enter = fadeIn(animationSpec = tween(durationMillis = 1000)),
-                        exit = fadeOut(animationSpec = tween(durationMillis = 1000, easing = EaseInSine))
+            items(state.tasks) { task ->
+                Row(
+                    modifier = Modifier
+//                                .background(themeColor)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 5.dp)
                     ) {
-                        Row(
+                        Row (
                             modifier = Modifier
-                                .background(themeColor)
-//                                .background(Color.White)
+//                                        .background(themeColor)
                                 .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(start = 5.dp)
+                            Row (
+//                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
                             ) {
-                                Row (
-                                    modifier = Modifier
-                                        .background(themeColor)
-                                        .fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Row (
-                                        modifier = Modifier.background(themeColor),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        if(PreferencesManager.starIcon) {
-                                            Icon(
-                                                modifier = Modifier
-                                                    .size(18.dp)
-                                                    .background(themeColor),
-                                                imageVector = Icons.Rounded.Star,
-                                                tint = if (task.priority == 0) Color.Transparent else if (task.priority == 1) Color(
-                                                    0xFFFDFD96
-                                                ) else if (task.priority == 2) Color(0xFFFF964F) else Color(
-                                                    0xFFFF5147
-//                                                0xFFFF6961
-                                                ),
-                                                contentDescription = "Priority Icon"
-                                            )
-                                        } else {
-                                            Icon(
-                                                painter = painterResource(R.drawable.task_priority_selected_icon3),
-                                                tint = if (task.priority == 0) Color.Transparent else if (task.priority == 1) Color(
-                                                    0xFFFDFD96
-                                                ) else if (task.priority == 2) Color(0xFFFF964F) else Color(
-                                                    0xFFFF5147
-//                                                0xFFFF6961
-                                                ),
-                                                contentDescription = "Priority Icon",
-                                            )
-                                        }
-                                        Text(
-                                            text = task.taskName,
-                                            fontSize = 20.sp,
-                                            fontWeight = customFontWeight,
-                                            modifier = Modifier.padding(start = 5.dp),
-                                            color = textColor
-                                        )
-                                    }
-                                    LottieAnimation(
+                                if(PreferencesManager.starIcon) {
+                                    Icon(
                                         modifier = Modifier
-                                            .background(themeColor)
-                                            .size(25.dp)
-                                            .clickable(
-                                                interactionSource = interactionSource,
-                                                indication = null,
-                                                onClick = {
-                                                    isPlaying = true
-                                                    onEvent(TaskEvent.DeleteTask(task))
-//                                            viewModel.cancelNotification(getNotificationTitle(), context = context)
-                                                    // New
-                                                    viewModel.cancelNotification(
-                                                        task.taskName,
-                                                        context = context
-                                                    )
-                                                    notificationManager.cancelAll();
-                                                }
-                                            ),
-                                        composition = composition,
-                                        progress = { progress }
+                                            .size(18.dp)
+//                                                    .background(themeColor)
+                                        ,
+                                        imageVector = Icons.Rounded.Star,
+                                        tint = when (task.priority) {
+                                            0 -> Color.Transparent
+                                            1 -> Color(
+                                                0xFFFDFD96
+                                            )
+                                            2 -> Color(0xFFFF964F)
+                                            else -> Color(
+                                                0xFFFF5147
+                                            )
+                                        },
+                                        contentDescription = "Priority Icon"
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(R.drawable.task_priority_selected_icon3),
+                                        tint = when (task.priority) {
+                                            0 -> Color.Transparent
+                                            1 -> Color(
+                                                0xFFFDFD96
+                                            )
+                                            2 -> Color(0xFFFF964F)
+                                            else -> Color(
+                                                0xFFFF5147
+                                            )
+                                        },
+                                        contentDescription = "Priority Icon",
+                                        modifier = Modifier
+                                            .padding(end = 2.dp)
                                     )
                                 }
-                                var textColor = Color.Blue
-                                if(task.date != "") {
-                                    textColor = if (isDateInThePast(task.date.toLong())) Color(0xFFCB273C) else Color(0x8FFFFFFF)
-//                                    textColor = if (isDateInThePast(task.date.toLong())) Color(0xFFFF6961) else Color(0x8FFFFFFF)
-                                }
-                                val date =
-                                    if (task.date == "") "" else viewModel.convertMillisToDate(task.date.toLong())
-                                val time =
-                                    if (task.time == "") "" else viewModel.convertMillisToTime(task.time.toLong())
-                                if (date != "") {
-                                    val humanFormatDate = convertMillisToDate(task.date.toLong())
-                                    Row (
-                                        modifier = Modifier,
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        Spacer(
-                                            modifier = Modifier.size(
-                                                width = if(PreferencesManager.starIcon) 23.dp else 15.dp,
-                                                height = 0.dp
-                                            )
+                                Text(
+                                    text = task.taskName,
+                                    fontSize = 20.sp,
+                                    fontWeight = customFontWeight,
+                                    maxLines = 1, // Set the desired number of lines
+                                    softWrap = true,
+                                    overflow = TextOverflow.Visible,
+//                                    modifier = Modifier.padding(start = 5.dp).background(Color.Magenta).size(width = 280.dp, height = 20.dp),
+                                    modifier = Modifier.padding(start = 5.dp),
+                                    color = textColor,
+                                )
+                            }
+
+                            // Lottie Animation
+                            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.task_complete_animation))
+                            AnimatedContent(
+                                targetState = state.tasks,
+                                label = "",
+                                transitionSpec = {
+                                    slideIntoContainer(
+                                        animationSpec = tween(0),
+                                        towards = Up
+                                    ).togetherWith(
+                                        slideOutOfContainer(
+                                            animationSpec = tween(0),
+                                            towards = Down
                                         )
-                                        val dateTimeText = if (isDateToday(task.date.toLong())) "Today $time"  else if(isDateTomorrow(task.date.toLong())) "Tomorrow $time" else if(isDateYesterday(task.date.toLong())) "Yesterday $time" else "$humanFormatDate $time"
-                                        val noteText = if(task.note == "") "" else if(task.time != "" ) " | " + task.note else "| " + task.note
-                                        Row (
-                                            modifier = Modifier
-                                        ){
-                                            Text(
-                                                text = dateTimeText,
-                                                fontSize = 12.sp,
-//                                        color = Color(0x8FFFFFFF)
-                                                color = textColor,
-//                                            fontWeight = customFontWeight,
-                                                fontWeight = FontWeight.W300,
-                                            )
-                                            Text(
-                                                text = noteText,
-                                                fontSize = 12.sp,
-                                                color = Color(0x8FFFFFFF),
-//                                                color = textColor,
-//                                            fontWeight = customFontWeight,
-                                                fontWeight = FontWeight.W300,
-                                            )
-                                        }
-                                    }
-                                } else {
-                                    Text(text = "", fontSize = 5.sp)
+                                    )
+                                },
+//                                modifier = Modifier.weight(-1f)
+                            ) {
+                                it
+                                var isPlaying by remember {
+                                    mutableStateOf(false)
+                                }
+                                val progress by animateLottieCompositionAsState(
+                                    composition = composition,
+                                    isPlaying = isPlaying,
+                                    speed = 8f,
+                                )
+                                LottieAnimation(
+                                    modifier = Modifier
+//                                            .background(themeColor)
+                                        .size(25.dp)
+                                        .clickable(
+                                            interactionSource = interactionSource,
+                                            indication = null,
+                                            onClick = {
+                                                isPlaying = true
+                                                onEvent(TaskEvent.DeleteTask(task))
+                                                // New
+                                                viewModel.cancelNotification(
+                                                    task.taskName,
+                                                    context = context
+                                                )
+                                                notificationManager.cancelAll();
+                                            }
+                                        ),
+                                    composition = composition,
+                                    progress = { progress }
+                                )
+                            }
+                        }
+                        var dateColor = Color.Blue
+                        if(task.date != "") {
+                            dateColor = if (isDateInThePast(task.date.toLong())) Color(0xFFCB273C) else Color(0x8FFFFFFF)
+                        }
+                        val date =
+                            if (task.date == "") "" else viewModel.convertMillisToDate(task.date.toLong())
+                        val time =
+                            if (task.time == "") "" else viewModel.convertMillisToTime(task.time.toLong())
+                        if (date != "") {
+                            val humanFormatDate = convertMillisToDate(task.date.toLong())
+                            Row (
+                                modifier = Modifier,
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Spacer(
+                                    modifier = Modifier.size(
+                                        width = if(PreferencesManager.starIcon) 24.dp else 18.dp,
+                                        height = 0.dp
+                                    )
+                                )
+                                val dateTimeText = if (isDateToday(task.date.toLong())) "Today $time"  else if(isDateTomorrow(task.date.toLong())) "Tomorrow $time" else if(isDateYesterday(task.date.toLong())) "Yesterday $time" else "$humanFormatDate $time"
+                                val noteText = if(task.note == "") "" else if(task.time != "" ) " | " + task.note else "| " + task.note
+                                Row (
+                                    modifier = Modifier
+                                ){
+                                    Text(
+                                        text = dateTimeText,
+                                        fontSize = 12.sp,
+                                        color = dateColor,
+                                        fontWeight = FontWeight.W300,
+                                    )
+                                    Text(
+                                        text = noteText,
+                                        fontSize = 12.sp,
+                                        color = Color(0x8FFFFFFF),
+                                        fontWeight = FontWeight.W300,
+                                    )
+                                }
+                            }
+                        } else {
+                            if(task.note == "") {
+                                Text(text = "", fontSize = 5.sp)
+                            }
+                            else {
+                                Row (
+                                    modifier = Modifier,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Spacer(
+                                        modifier = Modifier.size(
+                                            width = if (PreferencesManager.starIcon) 24.dp else 18.dp,
+                                            height = 0.dp
+                                        )
+                                    )
+                                    val noteText = task.note
+                                    Text(
+                                        text = noteText,
+                                        fontSize = 12.sp,
+                                        color = Color(0x8FFFFFFF),
+                                        fontWeight = FontWeight.W300,
+                                    )
                                 }
                             }
                         }
@@ -388,12 +421,6 @@ fun isDateInThePast(dateInMillis: Long): Boolean {
 
     return taskCalendar.get(Calendar.YEAR) < calendar.get(Calendar.YEAR)
 }
-
-//fun convertMillisToDate(millis: Long): String {
-//    val dateFormat = SimpleDateFormat("MMM dd", Locale.getDefault())
-//    val date = Date(millis)
-//    return dateFormat.format(date)
-//}
 
 fun convertMillisToDate(millis: Long): String {
     val dateFormat = SimpleDateFormat("MMM dd", Locale.getDefault())

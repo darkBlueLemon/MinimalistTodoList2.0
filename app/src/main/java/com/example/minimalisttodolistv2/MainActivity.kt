@@ -3,6 +3,7 @@ package com.example.minimalisttodolistv2
 import android.Manifest
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -158,14 +159,14 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                // Bday Manager
-//                if(!PreferencesManager.hasBdayNotifierBeenCalled) {
-//                    notificationService.scheduleBdayNotification()
-//                    PreferencesManager.hasBdayNotifierBeenCalled = true
-//                }
+
+
+
+
+
 
                 // Delete Notifications
-                deleteNotification(context = context, notificationManager = notificationManager)
+                deleteNotification(context = context, notificationManager = notificationManager, hasNotificationPermission, notificationService)
 
                 // Calling TaskScreen
                 val state by viewModel.state.collectAsState()
@@ -177,12 +178,24 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun deleteNotification(context: Context, notificationManager: NotificationManager, lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current) {
+fun deleteNotification(context: Context, notificationManager: NotificationManager, hasNotificationPermission: Boolean, notificationService: NotificationService, lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current) {
+    // on resume
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { source, event ->
             if(event == Lifecycle.Event.ON_RESUME) {
                 Log.d("MYTAG","On Resume")
                 notificationManager.cancelAll();
+                //bday
+                // Bday Manager
+//                    PreferencesManager.bdayVisible = false
+//                    PreferencesManager.bdayNotificationCount = 0
+                if(hasNotificationPermission && PreferencesManager.bdayNotificationCount <= 3) {
+                    notificationService.scheduleBdayNotification()
+                }
+                if(PreferencesManager.bdayVisible) {
+                    val intent = Intent(context, MessageActivity::class.java)
+                    context.startActivity(intent)
+                }
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -210,21 +223,10 @@ fun DatePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
                 openDialog.value = false
                 viewModel.setDate("")
                 onClickAction.invoke()
-                Log.d("MYTAG","dismiss request")
             },
             confirmButton = {
-                Log.d("MYTAG","confirm")
-//                TextButton(
-//                    onClick = {
-//                        openDialog.value = false
-//                        onClickAction.invoke()
-//                    }
-//                ) {
-//                    Text("OK")
-//                }
             },
             dismissButton = {
-                            Log.d("MYTAG","dismiss")
             },
         ) {
             Box(
@@ -232,14 +234,15 @@ fun DatePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
                     .align(Alignment.CenterHorizontally)
                     .clip(shape = RoundedCornerShape(percent = 7))
                     .background(Color.Black)
-                    .padding(start = 10.dp, end = 10.dp)
-//                    .size(width = 350.dp, height = 700.dp)
+                    .fillMaxWidth()
+//                    .size(width = 500.dp, height = 700.dp)
+                    .padding(start = 4.dp, end = 4.dp)
                     .border(
                         width = 2.dp,
                         color = Color.White,
                         shape = RoundedCornerShape(percent = 7)
-                    ),
-//            contentAlignment = Alignment.Center
+                    )
+                ,
             ) {
                 Column (
                     modifier = Modifier,
@@ -247,11 +250,12 @@ fun DatePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
                 ) {
                     androidx.compose.material3.DatePicker(
                         modifier = Modifier
-                            .background(Color.Black)
-//                            .padding(10.dp)
-//                            .fillMaxSize(),
+//                            .size(100.dp)
+//                            .align(Alignment.Start)
+//                            .background(Color.Yellow)
                                 ,
                         state = state,
+                        showModeToggle = false,
                         colors = DatePickerDefaults.colors(
                             containerColor = Color.Black,
                             titleContentColor = Color.White,
@@ -283,9 +287,9 @@ fun DatePicker(viewModel: AddTaskViewModel, onClickAction: () -> Unit) {
                         modifier = Modifier
                             .background(Color.Black)
                             .fillMaxWidth()
-//                            .fillMaxSize()
                             .size(100.dp)
-                            .padding(bottom = 20.dp, end = 20.dp),
+                            .padding(bottom = 20.dp, end = 20.dp)
+                                ,
                         horizontalArrangement = Arrangement.End
                     ){
                         TextButton(

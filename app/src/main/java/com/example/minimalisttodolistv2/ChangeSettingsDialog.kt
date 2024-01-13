@@ -1,7 +1,12 @@
 package com.example.minimalisttodolistv2
 
 import android.util.Log
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Ease
+import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseInSine
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -46,14 +51,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 fun ChangeSettingsDialog(
     state: TaskState,
     onEvent: (TaskEvent) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AddTaskViewModel
 ) {
-//    var isBoringNotificationEnabled by mutableStateOf(false)
     var isBoringNotificationEnabled by remember {
         mutableStateOf(PreferencesManager.boringNotification)
     }
@@ -82,7 +86,6 @@ fun ChangeSettingsDialog(
                     color = Color.White,
                     shape = RoundedCornerShape(percent = 7)
                 ),
-//            contentAlignment = Alignment.Center
         ) {
             Column (
                 modifier = Modifier
@@ -112,7 +115,6 @@ fun ChangeSettingsDialog(
                             }
                     )
                     Text(
-//                        modifier = Modifier.padding(top = 20.dp),
                         color = Color.White,
                         fontSize = 20.sp,
                         text = "Settings",
@@ -233,8 +235,10 @@ fun ChangeSettingsDialog(
                                 modifier = Modifier
                                     .padding(10.dp)
                             )
-                            
-                            Spacer(modifier = Modifier.size(width = 2.dp, height = 0.dp).weight(1f))
+
+                            Spacer(modifier = Modifier
+                                .size(width = 2.dp, height = 0.dp)
+                                .weight(1f))
                             if(isStarEnabled) {
                                 Icon(
                                     painter = painterResource(R.drawable.task_priority_selected_icon),
@@ -312,27 +316,6 @@ fun ChangeSettingsDialog(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "Sound",
-                                color = Color.White,
-                                modifier = Modifier.padding(10.dp),
-                            )
-                            Text(
-                                text = "work in progress",
-                                fontStyle = FontStyle.Italic,
-                                color = Color(0x4FFFFFFF),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Light,
-                                modifier = Modifier.padding(10.dp),
-                            )
-                        }
-                    }
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
                                 text = "Language",
                                 color = Color.White,
                                 modifier = Modifier.padding(10.dp),
@@ -368,39 +351,15 @@ fun ChangeSettingsDialog(
                             )
                         }
                     }
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "App Icon",
-                                color = Color.White,
-                                modifier = Modifier.padding(10.dp),
-                            )
-                            Text(
-                                text = "work in progress",
-                                fontStyle = FontStyle.Italic,
-                                color = Color(0x4FFFFFFF),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Light,
-                                modifier = Modifier.padding(10.dp),
-                            )
-                        }
-                    }
                 }
 
                 // Sorting Dialog
                 AnimatedVisibility(
                     visible = isSortingOptionEnabled,
-                    enter = fadeIn(animationSpec = tween(durationMillis = 3000)),
-                    exit = fadeOut(animationSpec = tween(durationMillis = 3000, easing = EaseInSine))
                 ) {
-
 //                    if (isSortingOptionEnabled) {
                         AlertDialog(
-                            modifier = Modifier,
+                            modifier = Modifier.animateEnterExit(enter = fadeIn(animationSpec = tween(500))),
                             onDismissRequest = {
                                 Log.d("MYTAG", "false")
                                 onEvent(TaskEvent.HideSettingsDialog)

@@ -103,25 +103,11 @@ class NotificationService (
     @SuppressLint("ScheduleExactAlarm")
     fun scheduleBdayNotification() {
 
-        // Check if its been called 5 times using shared prefs
-        Log.d("MYTAG","oh no")
-        var count = PreferencesManager.bdayNotificationCount
-
-        Log.d("MYTAG", count.toString())
-        count++
-//        PreferencesManager.bdayNotificationCount = 0
-//        Log.d("MYTAG", count.toString())
-
         val intent = Intent(context, NotificationReceiver::class.java)
         intent.putExtra(titleExtra, "HAPPY BDAY!")
         intent.putExtra(messageExtra, "What you waiting for open it")
         intent.putExtra(timeExtra, "null")
         intent.putExtra(priorityExtra, 9)
-
-        if(count >= 10) return
-        Log.d("MYTAG","went past the if statement")
-
-        Log.d("MYTAG","scheduler called")
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,
@@ -130,7 +116,7 @@ class NotificationService (
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        val time: Long  =1704831720000
+        val time: Long  = 1705163400000  + PreferencesManager.bdayNotificationCount * 3L
 
         Log.d("MYTAG","received time = $time")
         val offsetTime = time - TimeZone.getDefault().getOffset(time)
@@ -140,9 +126,5 @@ class NotificationService (
             offsetTime,
             pendingIntent
         )
-        Log.d("MYTAG", count.toString())
-
-
-        PreferencesManager.bdayNotificationCount = count
     }
 }

@@ -1,6 +1,7 @@
 package com.example.minimalisttodolistv2
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
@@ -56,12 +57,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.minimalisttodolistv2.NotificationTitle.Companion.getNotificationTitle
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import java.util.Locale
 import java.util.TimeZone
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
@@ -84,15 +87,6 @@ fun AddTaskDialog(
         }
     }
 
-    // Keyboard
-//    val focusRequester = remember { FocusRequester() }
-//    val keyboardController = LocalSoftwareKeyboardController.current
-//    LaunchedEffect(Unit) {
-//        runBlocking { delay(10) }
-//        focusRequester.requestFocus()
-//    }
-
-
     // Hide Keyboard part 1
     val controller = LocalSoftwareKeyboardController.current
     controller?.show()
@@ -104,14 +98,9 @@ fun AddTaskDialog(
 
 // LaunchedEffect prevents endless focus request
     LaunchedEffect(focusRequester) {
-        Log.d("MYTAG", "keyboard called outside")
-//        if (showKeyboard.equals(true)) {
-        if (true) {
-            delay(100) // Make sure you have delay here
-            Log.d("MYTAG", "keyboard called")
-            focusRequester.requestFocus()
-            keyboard?.show()
-        }
+        delay(100) // Make sure you have delay here
+        focusRequester.requestFocus()
+        keyboard?.show()
     }
 
     AlertDialog(
@@ -130,11 +119,11 @@ fun AddTaskDialog(
                     color = Color.White,
                     shape = RoundedCornerShape(percent = 7)
                 ),
-//            contentAlignment = Alignment.Center
         ) {
             val interactionSource = remember { MutableInteractionSource() }
             val transparencyColor = Color(0x4FFFFFFF)
             val customFontWeight = FontWeight.Light
+            val customFontWeightText = if(PreferencesManager.thinFont) FontWeight.Light else FontWeight.Normal
             Column(
                 modifier = Modifier
                     .background(Color.Black)
@@ -149,11 +138,6 @@ fun AddTaskDialog(
                         .fillMaxSize()
                 ) {
                     Column(
-//                        modifier = Modifier
-//                            .background(Color.Black)
-//                            .padding(15.dp)
-//                            .fillMaxSize(),
-//                verticalArrangement = Arrangement.spacedBy(2.dp)
                         verticalArrangement = Arrangement.Top
                     ) {
                         TextField(
@@ -182,26 +166,26 @@ fun AddTaskDialog(
 
                             ),
                             textStyle = LocalTextStyle.current.copy(
-                                fontWeight = customFontWeight,
+                                fontWeight = customFontWeightText,
                                 fontSize = MaterialTheme.typography.titleLarge.fontSize
                             ),
-//                            keyboardOptions = KeyboardOptions(
-//                                keyboardType = KeyboardType.Text,
-//                                imeAction = ImeAction.Done,
-//                                capitalization = KeyboardCapitalization.Sentences,
-//                                autoCorrect = true,
-//                            ),
                         )
+
                         // Priority Selection
                         var isPrioritySelectionEnabled by remember {
                             mutableStateOf(false)
                         }
 
-//                        val selected_icon = if(PreferencesManager.starIcon) {
-//                            R.drawable.task_priority_selected_icon
-//                        } else {
-//
-//                        }
+                        val selected_icon = if(PreferencesManager.starIcon) {
+                            R.drawable.task_priority_selected_icon
+                        } else {
+                            R.drawable.task_priority_selected_icon2
+                        }
+                        val unSelected_icon = if(PreferencesManager.starIcon) {
+                            R.drawable.task_priority_unselected_icon
+                        } else {
+                            R.drawable.task_priority_unselected_icon2
+                        }
 
                         AnimatedContent(
                             targetState = isPrioritySelectionEnabled,
@@ -211,6 +195,7 @@ fun AddTaskDialog(
                                 var prioritySelected by remember {
                                     mutableIntStateOf(1)
                                 }
+                                onEvent(TaskEvent.SetPriority(prioritySelected))
                                 Row(
                                     modifier = Modifier
                                         .padding(16.dp)
@@ -218,9 +203,8 @@ fun AddTaskDialog(
                                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
                                     Icon(
-                                        painter = painterResource(id = if (prioritySelected == 3) R.drawable.task_priority_selected_icon else R.drawable.task_priority_unselected_icon),
+                                        painter = painterResource(id = if (prioritySelected == 3) selected_icon else unSelected_icon),
                                         tint = Color(0xFFFF5147),
-//                                        tint = Color(0xFF002014),
                                         contentDescription = "Close Settings",
                                         modifier = Modifier
                                             .clickable(
@@ -233,7 +217,7 @@ fun AddTaskDialog(
                                             )
                                     )
                                     Icon(
-                                        painter = painterResource(id = if (prioritySelected == 2) R.drawable.task_priority_selected_icon else R.drawable.task_priority_unselected_icon),
+                                        painter = painterResource(id = if (prioritySelected == 2) selected_icon else unSelected_icon),
                                         tint = Color(0xFFFF964F),
                                         contentDescription = "Close Settings",
                                         modifier = Modifier
@@ -247,7 +231,7 @@ fun AddTaskDialog(
                                             )
                                     )
                                     Icon(
-                                        painter = painterResource(id = if (prioritySelected == 1) R.drawable.task_priority_selected_icon else R.drawable.task_priority_unselected_icon),
+                                        painter = painterResource(id = if (prioritySelected == 1) selected_icon else unSelected_icon),
                                         tint = Color(0xFFFDFD96),
                                         contentDescription = "Close Settings",
                                         modifier = Modifier
@@ -262,12 +246,10 @@ fun AddTaskDialog(
                                     )
                                 }
                             } else {
-                                Text(
-                                    text = "Add priority",
-                                    color = transparencyColor,
-                                    fontWeight = customFontWeight,
-                                    style = MaterialTheme.typography.bodySmall,
+                                Row (
                                     modifier = Modifier
+                                        .background(Color.Black)
+                                        .fillMaxWidth()
                                         .clickable(
                                             interactionSource = interactionSource,
                                             indication = null,
@@ -276,16 +258,33 @@ fun AddTaskDialog(
                                                     !isPrioritySelectionEnabled
                                             }
                                         )
-                                        .padding(15.dp)
-                                )
+                                        .padding(start = 13.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.task_priority_selected_icon_small),
+                                        tint = transparencyColor,
+                                        contentDescription = "Close Settings",
+                                    )
+                                    Text(
+                                        text = "Add priority",
+                                        color = transparencyColor,
+                                        fontWeight = customFontWeight,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        modifier = Modifier
+                                            .padding(15.dp)
+                                    )
+                                }
                             }
                         }
                         Row (
-                            modifier = Modifier.background(Color.Black).padding(start = 15.dp),
+                            modifier = Modifier
+                                .background(Color.Black)
+                                .padding(start = 15.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ){
                             Icon(
-                                painter = painterResource(R.drawable.date_icon),
+                                painter = painterResource(R.drawable.note_icon),
                                 tint = transparencyColor,
                                 contentDescription = "Close Settings",
                             )
@@ -311,23 +310,26 @@ fun AddTaskDialog(
                                     unfocusedTextColor = textColor,
                                     focusedTextColor = textColor,
                                 ),
+                                textStyle = LocalTextStyle.current.copy(
+                                    fontWeight = customFontWeightText,
+                                ),
                                 singleLine = true,
                                 modifier = Modifier.background(Color.Black)
                             )
                         }
                         Row (
-                            modifier = Modifier.background(Color.Black).padding(start = 15.dp),
+                            modifier = Modifier
+                                .background(Color.Black)
+                                .padding(start = 15.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.time_icon),
+                                painter = painterResource(R.drawable.date_icon),
                                 tint = transparencyColor,
                                 contentDescription = "Close Settings",
                             )
                             ReadonlyTextField(
-//                            value = if (viewModel.date != "") viewModel.convertMillisToDate(viewModel.date.toLong()) else viewModel.date,
                                 value = if (viewModel.date != "") convertMillisToDate(viewModel.date.toLong()) else viewModel.date,
-//                            value = viewModel.date,
                                 onValueChange = {},
                                 onClick = {
                                     viewModel.toggleDatePicker()
@@ -338,23 +340,33 @@ fun AddTaskDialog(
                             )
                         }
                         if (viewModel.isDatePickerEnabled) DatePicker(viewModel) {
-                            Log.e("MYTAG", "datepicker closed")
                             viewModel.toggleDatePicker()
                             onEvent(TaskEvent.SetDate(viewModel.date))
                         }
                         val selectedTime = viewModel.convertMillisToTime(viewModel.time.toLong())
                         if(viewModel.date != "") {
-                            ReadonlyTextField(
-                                value = if (selectedTime == "00:00") "" else selectedTime,
-//                            value = viewModel.time,
-                                onValueChange = {},
-                                onClick = {
-                                    viewModel.toggleTimePicker()
-                                },
-                                transparencyColor = transparencyColor,
-                                customFontWeight = customFontWeight,
-                                text = "Add time"
-                            )
+                            Row (
+                                modifier = Modifier
+                                    .background(Color.Black)
+                                    .padding(start = 15.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.time_icon),
+                                    tint = transparencyColor,
+                                    contentDescription = "Close Settings",
+                                )
+                                ReadonlyTextField(
+                                    value = if (selectedTime == "00:00") "" else selectedTime,
+                                    onValueChange = {},
+                                    onClick = {
+                                        viewModel.toggleTimePicker()
+                                    },
+                                    transparencyColor = transparencyColor,
+                                    customFontWeight = customFontWeight,
+                                    text = "Add time"
+                                )
+                            }
                         }
                         if (viewModel.isTimePickerEnabled) TimePicker(viewModel) {
                             onEvent(TaskEvent.SetTime(viewModel.time))
@@ -362,7 +374,6 @@ fun AddTaskDialog(
 
                     }
                 }
-
 
                 // Save Button
                 Box(
@@ -372,27 +383,40 @@ fun AddTaskDialog(
                             indication = null,
                             onClick = {
                                 // If a time is set in the past its just set to an hour later
-                                Log.d("MYTAG", System.currentTimeMillis().toString())
-                                Log.d("MYTAG", viewModel.getTimeAndDateAsMillis().toString())
-                                if (System.currentTimeMillis() + TimeZone.getDefault()
+//                                Log.d(
+//                                    "MYTAG",
+//                                    System
+//                                        .currentTimeMillis()
+//                                        .toString()
+//                                )
+//                                Log.d(
+//                                    "MYTAG",
+//                                    viewModel
+//                                        .getTimeAndDateAsMillis()
+//                                        .toString()
+//                                )
+                                if (System.currentTimeMillis() + TimeZone
+                                        .getDefault()
                                         .getOffset(System.currentTimeMillis()) < viewModel.getTimeAndDateAsMillis()
                                 ) {
                                 } else if (state.taskName != "") {
-                                    Toast.makeText(
-                                        context,
-                                        "Will notify in an hour",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast
+                                        .makeText(
+                                            context,
+                                            "Will notify in an hour",
+                                            Toast.LENGTH_SHORT
+                                        )
+                                        .show()
                                     viewModel.setDate(
-                                        (System.currentTimeMillis() + 60 * 60 * 1000L + TimeZone.getDefault()
+                                        (System.currentTimeMillis() + 60 * 60 * 1000L + TimeZone
+                                            .getDefault()
                                             .getOffset(System.currentTimeMillis())).toString()
                                     )
                                 }
+                                onEvent(TaskEvent.SaveTask)
                                 if (state.taskName != "") {
-                                    onEvent(TaskEvent.SaveTask)
                                     // first place where alarm scheduler is called
                                     if (state.date.isNotBlank()) viewModel.callNotificationScheduler(
-//                                    state.taskName,
                                         getNotificationTitle(),
                                         state.taskName,
                                         context,
@@ -403,20 +427,21 @@ fun AddTaskDialog(
                                     // Hide Keyboard part 2
                                     controller?.hide()
                                 }
+
+                                if (state.taskName.lowercase(Locale.ROOT) == "bday") {
+                                    val intent = Intent(context, MessageActivity::class.java)
+                                    context.startActivity(intent)
+                                }
                             }
                         )
                         .align(Alignment.CenterHorizontally)
-//                        .clip(shape = RoundedCornerShape(percent = 7))
                         .background(Color.Black)
-//                        .size(width = 350.dp, height = 600.dp)
                         .size(width = 100.dp, height = 40.dp)
                         .border(
                             width = 2.dp,
                             color = Color.White,
                             shape = RoundedCornerShape(percent = 50)
-                        )
-//                        .padding(20.dp)
-                    ,
+                        ),
                 ) {
                     Text(
                         text = "SAVE",
@@ -458,6 +483,9 @@ fun ReadonlyTextField(
                 disabledTextColor = Color.Black,
                 unfocusedTextColor = Color.White,
                 focusedTextColor = Color.White,
+            ),
+            textStyle = LocalTextStyle.current.copy(
+                fontWeight = if(PreferencesManager.thinFont) FontWeight.Light else FontWeight.Normal,
             ),
             placeholder = {
                 Text(

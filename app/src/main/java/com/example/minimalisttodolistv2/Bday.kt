@@ -1,7 +1,10 @@
 package com.example.minimalisttodolistv2
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,21 +19,25 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.TimeZone
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun Bday() {
-    val dotLength = 2
-    val dotLengthShort = 1
+    val dotLength = 16
+    val dotLengthShort = 8
+    val interactionSource = remember { MutableInteractionSource() }
     AlertDialog(
         modifier = Modifier,
         onDismissRequest = {
@@ -207,6 +214,35 @@ fun Bday() {
                             fontSize = 16.sp,
                             modifier = Modifier.fillMaxWidth()
                         )
+                    }
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .clickable(
+                                    interactionSource = interactionSource,
+                                    indication = null,
+                                    onClick = {
+                                        PreferencesManager.bdayVisible = false
+                                    }
+                                )
+                                .align(Alignment.CenterHorizontally)
+                                .background(Color.Black)
+                                .size(width = 100.dp, height = 40.dp)
+                                .border(
+                                    width = 2.dp,
+                                    color = Color.White,
+                                    shape = RoundedCornerShape(percent = 50)
+                                ),
+                        ) {
+                            Text(
+                                text = "Bub Bye",
+                                color = Color.White,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                            )
+                        }
                     }
                 }
             }

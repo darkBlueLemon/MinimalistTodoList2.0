@@ -2,13 +2,21 @@ package com.example.minimalisttodolistv2
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
 object PreferencesManager {
     private const val PREF_NAME = "todo_list_shared_pref_manager"
     private const val SORTING_ORDER = "sorting_order"
     private const val STAR_ICON = "start_icon_enabled"
     private const val THIN_FONT = "thin_font_enabled"
-    private const val BORING_NOTIFICATION = "BORING_notification"
+    private const val BORING_NOTIFICATION = "boring_notification"
+    private const val BDAY_COUNT = "bday_count"
+    private const val BDAY_VISIBLE = "bday_visible"
+    private const val BDAY_OVER = "bday_over"
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -42,15 +50,22 @@ object PreferencesManager {
             sharedPreferences.edit().putBoolean(BORING_NOTIFICATION, value).apply()
         }
 
+    // Bday
     var bdayNotificationCount: Int
-        get() = sharedPreferences.getInt("bday_notification_count", 0)
+        get() = sharedPreferences.getInt(BDAY_COUNT, 0)
         set(value) {
-            sharedPreferences.edit().putInt("bday_notification_count", value).apply()
+            sharedPreferences.edit().putInt(BDAY_COUNT, value).apply()
         }
 
-    var hasBdayNotifierBeenCalled: Boolean
-        get() = sharedPreferences.getBoolean("bday_notifier_called", false)
+    var bdayVisible: Boolean
+        get() = sharedPreferences.getBoolean(BDAY_VISIBLE, false)
         set(value) {
-            sharedPreferences.edit().putBoolean("bday_notifier_called", value).apply()
+            sharedPreferences.edit().putBoolean(BDAY_VISIBLE, value).apply()
+        }
+
+    var bdayOver: Boolean
+        get() = sharedPreferences.getBoolean(BDAY_OVER, false)
+        set(value) {
+            sharedPreferences.edit().putBoolean(BDAY_OVER, value).apply()
         }
 }
