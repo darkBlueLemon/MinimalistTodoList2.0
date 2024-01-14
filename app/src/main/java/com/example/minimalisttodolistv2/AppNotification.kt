@@ -11,7 +11,7 @@ class AppNotification: Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d("MYTAG","channel created")
+//        Log.d("MYTAG","channel created")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 NotificationService.TODOLIST_CHANNEL_ID,

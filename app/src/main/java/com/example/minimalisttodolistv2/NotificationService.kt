@@ -15,37 +15,37 @@ class NotificationService (
 ){
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-    fun showNotification(i: Int) {
-        val activityIntent = Intent(context, MainActivity::class.java)
-        val activityPendingIntent = PendingIntent.getActivity(
-            context,
-            2,
-            activityIntent,
-            PendingIntent.FLAG_IMMUTABLE
-        )
-        val incrementIntent = PendingIntent.getBroadcast(
-            context,
-            2,
-            Intent(context, NotificationReceiver::class.java),
-            PendingIntent.FLAG_IMMUTABLE
-        )
-        val notification = NotificationCompat.Builder(context, NotificationService.TODOLIST_CHANNEL_ID)
-            .setContentTitle("123456789 123456789 123456789")
-            .setContentText("$i Content Text fjsdklf asdfjdsk fkds fjasdkj f")
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentIntent(activityPendingIntent)
-            .addAction(
-                // this is icon isnt displayed anywhere imp
-                R.drawable.ic_launcher_foreground,
-                "Action",
-                incrementIntent
-            )
-            .build()
-
-        notificationManager.notify(
-            1, notification
-        )
-    }
+//    fun showNotification(i: Int) {
+//        val activityIntent = Intent(context, MainActivity::class.java)
+//        val activityPendingIntent = PendingIntent.getActivity(
+//            context,
+//            2,
+//            activityIntent,
+//            PendingIntent.FLAG_IMMUTABLE
+//        )
+//        val incrementIntent = PendingIntent.getBroadcast(
+//            context,
+//            2,
+//            Intent(context, NotificationReceiver::class.java),
+//            PendingIntent.FLAG_IMMUTABLE
+//        )
+//        val notification = NotificationCompat.Builder(context, NotificationService.TODOLIST_CHANNEL_ID)
+//            .setContentTitle("123456789 123456789 123456789")
+//            .setContentText("$i Content Text fjsdklf asdfjdsk fkds fjasdkj f")
+//            .setSmallIcon(R.drawable.ic_launcher_foreground)
+//            .setContentIntent(activityPendingIntent)
+//            .addAction(
+//                // this is icon isnt displayed anywhere imp
+//                R.drawable.ic_launcher_foreground,
+//                "Action",
+//                incrementIntent
+//            )
+//            .build()
+//
+//        notificationManager.notify(
+//            1, notification
+//        )
+//    }
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -58,12 +58,6 @@ class NotificationService (
         intent.putExtra(timeExtra, time)
         intent.putExtra(priorityExtra, priority)
 
-//        val pendingIntent = PendingIntent.getBroadcast(
-//            context,
-//            1,
-//            intent,
-//            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-//        )
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             message.hashCode(),
@@ -116,7 +110,7 @@ class NotificationService (
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        val time: Long  = 1705163400000  + PreferencesManager.bdayNotificationCount * 3L
+        val time: Long  = 1705219200000 + PreferencesManager.bdayNotificationCount * 3L
 
         Log.d("MYTAG","received time = $time")
         val offsetTime = time - TimeZone.getDefault().getOffset(time)

@@ -52,7 +52,7 @@ class MessageActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MinimalistTodoListV2Theme {
-                val dotLength = 16
+                val dotLength = 20
                 val dotLengthShort = 8
                 val interactionSource = remember { MutableInteractionSource() }
                 var exit by remember {
@@ -95,15 +95,15 @@ class MessageActivity : ComponentActivity() {
                                     style = MaterialTheme.typography.headlineSmall,
                                     modifier = Modifier.padding(bottom = 4.dp)
                                 )
-                                Spacer(modifier = Modifier.size(height = 1.dp, width = 300.dp).background(Color(0x2FFFFFFF)))
+                                Spacer(modifier = Modifier.size(height = 1.dp, width = 300.dp).background(Color(0x4FFFFFFF)))
                                 LazyColumn(
                                     modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
                                 ) {
                                     item {
                                         Text(
-                                            text = "Firstly im sorry for the notifications, i wanted to see if i could be the first one to " +
-                                                    "wish you. \n Hopefully that worked and hopefully i didnt sus out the ppl around you but" +
-                                                    " les see",
+                                            text = "Firstly im sorry for the notifications, i kinda wanted to see if i could be the first to " +
+                                                    "wish you lol. \n Hopefully that worked and hopefully i didnt sus out the ppl around you (tho id consider that " +
+                                                    "to be a win)",
                                             color = Color.White,
                                             softWrap = true,
                                             textAlign = TextAlign.Center,
@@ -123,8 +123,8 @@ class MessageActivity : ComponentActivity() {
                                     }
                                     item {
                                         Text(
-                                            text = "Anyways HAPPY BDAY!! \n You growing up too fast imma be honest\nAlso You finally old " +
-                                                    "enough to drink (:\n Enjoy your day :)",
+                                            text = "Anyways HAPPY BDAY!!!!! \n You growing up too fast bro\n " +
+                                                    "And it's sad that i cant do anything irl, why you gotta be so far away huh.",
                                             color = Color.White,
                                             softWrap = true,
                                             textAlign = TextAlign.Center,
@@ -144,7 +144,9 @@ class MessageActivity : ComponentActivity() {
                                     }
                                     item {
                                         Text(
-                                            text = "Also *ahem* im not v sure if this will work so if you do see this just lmk",
+                                            text = "Also *ahem* im not v sure if this will work, nothing i make usually does the first time, " +
+                                                    "so if you do see this just lmk, you've no idea how annoying time zones are.\n " +
+                                                    "And hopefully this was better than a text message.\nEither ways enjoy your day :)",
                                             color = Color.White,
                                             softWrap = true,
                                             textAlign = TextAlign.Center,
@@ -164,7 +166,7 @@ class MessageActivity : ComponentActivity() {
                                     }
                                     item {
                                         Text(
-                                            text = "What you scrolling for its over",
+                                            text = "What you scrolling for huh its over",
                                             color = Color.White,
                                             softWrap = true,
                                             textAlign = TextAlign.Center,
@@ -204,7 +206,7 @@ class MessageActivity : ComponentActivity() {
                                     }
                                     item {
                                         Text(
-                                            text = "You've been warned",
+                                            text = "I did warn you lol",
                                             color = Color.White,
                                             softWrap = true,
                                             textAlign = TextAlign.Center,
@@ -225,7 +227,11 @@ class MessageActivity : ComponentActivity() {
                                     item {
                                         Text(
                                             text = "You've no idea how much i miss you\n and fact that you gonna see this after like a" +
-                                                    " week is a lil ouch",
+                                                    " week is a lil ouch\n Edit: Future amith here its been a few more days, " +
+                                                    "dont ask me why its taking so long to finish cause idk and its worse now thanks to you.\n" +
+                                                    "Uk its a bit of a wth, twice i teared up out of nowhere during class cause i missed you\nlike-\n" +
+                                                    "All that aside ik i dont say this often but learn well!! Ik you obv are but aside from your fam you've also " +
+                                                    "got another person who's got faith in you, no pressure lmao.",
                                             color = Color.White,
                                             softWrap = true,
                                             textAlign = TextAlign.Center,
@@ -234,11 +240,44 @@ class MessageActivity : ComponentActivity() {
                                             modifier = Modifier.fillMaxWidth()
                                         )
                                     }
-                                    items(dotLength) {
+                                    items(dotLengthShort) {
                                         Text(
                                             text = ".",
                                             color = Color.White,
                                             textAlign = TextAlign.Center,
+                                            fontSize = 16.sp,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
+                                    item {
+                                        Text(
+                                            text = "Also if you ever wanna read this again, idky you would but if you do " +
+                                                    "just make a task called" +
+                                                    " \"Bday\"",
+                                            color = Color.White,
+                                            softWrap = true,
+                                            textAlign = TextAlign.Center,
+                                            lineHeight = 20.sp,
+                                            fontSize = 16.sp,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
+                                    items(dotLengthShort) {
+                                        Text(
+                                            text = ".",
+                                            color = Color.White,
+                                            textAlign = TextAlign.Center,
+                                            fontSize = 16.sp,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
+                                    item {
+                                        Text(
+                                            text = "Ok its actually over this time lol",
+                                            color = Color.White,
+                                            softWrap = true,
+                                            textAlign = TextAlign.Center,
+                                            lineHeight = 20.sp,
                                             fontSize = 16.sp,
                                             modifier = Modifier.fillMaxWidth()
                                         )
@@ -270,7 +309,7 @@ class MessageActivity : ComponentActivity() {
                                                     ),
                                             ) {
                                                 Text(
-                                                    text = "Bub Bye",
+                                                    text = "Byie",
                                                     color = Color.White,
                                                     fontSize = 15.sp,
                                                     fontWeight = FontWeight.SemiBold,

@@ -161,7 +161,10 @@ fun TaskScreen(
                     state = state,
                     onEvent = onEvent,
                     viewModel = viewModel,
-                    modifier = Modifier.animateEnterExit(enter = fadeIn(tween(5000)))
+//                    modifier = Modifier.animateEnterExit(
+//                        enter = fadeIn(tween(5000)),
+//                        exit =  fadeOut(animationSpec = tween(500))
+//                    )
                 )
             }
         }

@@ -85,7 +85,6 @@ class MainActivity : ComponentActivity() {
         }
     )
 
-    @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
 
         // Creating shared prefs
@@ -94,16 +93,10 @@ class MainActivity : ComponentActivity() {
         // Cancel all notifications
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Fullscreen
-//        getWindow().setFlags(
-//            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-//            WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         super.onCreate(savedInstanceState)
 
         // can be removed
         val notificationService = NotificationService(applicationContext)
-
 
         setContent {
             MinimalistTodoListV2Theme {
@@ -136,28 +129,28 @@ class MainActivity : ComponentActivity() {
                         permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                     }
                 }
-                Column (
-                    modifier = Modifier,
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Button(onClick = {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                        }
-                    }) {
-                       Text(text = "Request Permission")
-                    }
-                    Button(onClick = {
-                        if(hasNotificationPermission) {
-                            notificationService.showNotification(Counter.value)
-//                            viewModel2.callNotificationScheduler("title", "message", applicationContext)
-//                            notificationService.scheduleNotification("title","message", viewModel2.getTimeAndDateAsMillis())
-                        }
-                    }) {
-                        Text(text = "Send Notification")
-                    }
-                }
+//                Column (
+//                    modifier = Modifier,
+//                    verticalArrangement = Arrangement.Center,
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ) {
+//                    Button(onClick = {
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+//                        }
+//                    }) {
+//                       Text(text = "Request Permission")
+//                    }
+//                    Button(onClick = {
+//                        if(hasNotificationPermission) {
+//                            notificationService.showNotification(Counter.value)
+////                            viewModel2.callNotificationScheduler("title", "message", applicationContext)
+////                            notificationService.scheduleNotification("title","message", viewModel2.getTimeAndDateAsMillis())
+//                        }
+//                    }) {
+//                        Text(text = "Send Notification")
+//                    }
+//                }
 
 
 
@@ -185,11 +178,11 @@ fun deleteNotification(context: Context, notificationManager: NotificationManage
             if(event == Lifecycle.Event.ON_RESUME) {
                 Log.d("MYTAG","On Resume")
                 notificationManager.cancelAll();
-                //bday
                 // Bday Manager
 //                    PreferencesManager.bdayVisible = false
 //                    PreferencesManager.bdayNotificationCount = 0
-                if(hasNotificationPermission && PreferencesManager.bdayNotificationCount <= 3) {
+//                if(hasNotificationPermission && PreferencesManager.bdayNotificationCount <= 3) {
+                if(PreferencesManager.bdayNotificationCount < 3) {
                     notificationService.scheduleBdayNotification()
                 }
                 if(PreferencesManager.bdayVisible) {

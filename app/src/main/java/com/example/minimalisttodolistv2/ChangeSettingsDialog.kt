@@ -8,6 +8,8 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Ease
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseInSine
+import androidx.compose.animation.core.EaseOutBounce
+import androidx.compose.animation.core.EaseOutExpo
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -182,6 +184,7 @@ fun ChangeSettingsDialog(
                             AnimatedVisibility(visible = isBoringNotificationEnabled) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
+                                    tint = Color.White,
                                     contentDescription = ""
                                 )
                             }
@@ -210,6 +213,7 @@ fun ChangeSettingsDialog(
                             AnimatedVisibility(visible = isThinFontEnabled) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
+                                    tint = Color.White,
                                     contentDescription = ""
                                 )
                             }
@@ -359,10 +363,13 @@ fun ChangeSettingsDialog(
                 ) {
 //                    if (isSortingOptionEnabled) {
                         AlertDialog(
-                            modifier = Modifier.animateEnterExit(enter = fadeIn(animationSpec = tween(500))),
+                            modifier = Modifier.animateEnterExit(
+                                enter = fadeIn(animationSpec = tween(500)),
+//                                exit =  fadeOut(animationSpec = tween(500))
+                                ),
                             onDismissRequest = {
                                 Log.d("MYTAG", "false")
-                                onEvent(TaskEvent.HideSettingsDialog)
+//                                onEvent(TaskEvent.HideSettingsDialog)
                                 isSortingOptionEnabled = false
                             }
                         ) {
@@ -413,6 +420,7 @@ fun ChangeSettingsDialog(
                                         AnimatedVisibility(visible = state.sortType.name == "PRIORITY") {
                                             Icon(
                                                 imageVector = Icons.Default.Check,
+                                                tint = Color.White,
                                                 contentDescription = ""
                                             )
                                         }
@@ -441,6 +449,7 @@ fun ChangeSettingsDialog(
                                         AnimatedVisibility(visible = state.sortType.name == "REMAINING_TIME") {
                                             Icon(
                                                 imageVector = Icons.Default.Check,
+                                                tint = Color.White,
                                                 contentDescription = ""
                                             )
                                         }
@@ -468,6 +477,7 @@ fun ChangeSettingsDialog(
                                         AnimatedVisibility(visible = state.sortType.name == "ALPHABETICAL") {
                                             Icon(
                                                 imageVector = Icons.Default.Check,
+                                                tint = Color.White,
                                                 contentDescription = ""
                                             )
                                         }
@@ -495,6 +505,7 @@ fun ChangeSettingsDialog(
                                         AnimatedVisibility(visible = state.sortType.name == "ALPHABETICAL_REV") {
                                             Icon(
                                                 imageVector = Icons.Default.Check,
+                                                tint = Color.White,
                                                 contentDescription = ""
                                             )
                                         }

@@ -109,7 +109,7 @@ class NotificationReceiver: BroadcastReceiver() {
 
         // Calling lone notification
         notificationManager.notify(
-            intent?.getStringExtra(messageExtra).hashCode(),
+            intent.getStringExtra(messageExtra).hashCode(),
             notification
         )
 

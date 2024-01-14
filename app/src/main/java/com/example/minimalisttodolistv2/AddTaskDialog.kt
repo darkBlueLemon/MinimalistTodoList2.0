@@ -400,13 +400,13 @@ fun AddTaskDialog(
                                         .getOffset(System.currentTimeMillis()) < viewModel.getTimeAndDateAsMillis()
                                 ) {
                                 } else if (state.taskName != "") {
-                                    Toast
-                                        .makeText(
-                                            context,
-                                            "Will notify in an hour",
-                                            Toast.LENGTH_SHORT
-                                        )
-                                        .show()
+//                                    Toast
+//                                        .makeText(
+//                                            context,
+//                                            "Will notify in an hour",
+//                                            Toast.LENGTH_SHORT
+//                                        )
+//                                        .show()
                                     viewModel.setDate(
                                         (System.currentTimeMillis() + 60 * 60 * 1000L + TimeZone
                                             .getDefault()

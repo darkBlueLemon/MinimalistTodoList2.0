@@ -4,17 +4,18 @@ class NotificationTitle {
     companion object {
         private val notSafeStringList = listOf(
             "Your father in law will finish it?",
-            "Do the stoopid task noob",
+            "Do the stopid task noob",
             "What you waiting for?",
             "It won't complete on its own uk",
-            "titleOne",
-            "titleTwo",
-            "titleThree",
-            "titleFour"
+            "I exist",
+            "I need attention",
+            "Don't forget me",
+            "Wanna be late for you marriage too?",
+            "Stop ignoring me",
         )
 
         private val safeStringList = listOf(
-            "Task Overdue"
+            "Task Due"
         )
 
         fun getNotificationTitle(): String {
