@@ -89,21 +89,22 @@ class MessageActivity : ComponentActivity() {
                                 verticalArrangement = Arrangement.Top,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Text(
-                                    text = "Happy Bday!!",
-                                    color = Color.White,
-                                    style = MaterialTheme.typography.headlineSmall,
-                                    modifier = Modifier.padding(bottom = 4.dp)
-                                )
-                                Spacer(modifier = Modifier.size(height = 1.dp, width = 300.dp).background(Color(0x4FFFFFFF)))
+//                                Text(
+//                                    text = "Happy Bday!!",
+//                                    color = Color.White,
+//                                    style = MaterialTheme.typography.headlineSmall,
+//                                    modifier = Modifier.padding(bottom = 4.dp)
+//                                )
+//                                Spacer(modifier = Modifier.size(height = 1.dp, width = 300.dp).background(Color(0xFFFFFFFF)))
                                 LazyColumn(
-                                    modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
+                                    modifier = Modifier.fillMaxWidth()
+//                                            modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
                                 ) {
                                     item {
                                         Text(
-                                            text = "Firstly im sorry for the notifications, i kinda wanted to see if i could be the first to " +
+                                            text = "Firstly im sorry for the notifications, i wanted to see if i could be the first to " +
                                                     "wish you lol. \n Hopefully that worked and hopefully i didnt sus out the ppl around you (tho id consider that " +
-                                                    "to be a win)",
+                                                    "a win)",
                                             color = Color.White,
                                             softWrap = true,
                                             textAlign = TextAlign.Center,
@@ -227,9 +228,9 @@ class MessageActivity : ComponentActivity() {
                                     item {
                                         Text(
                                             text = "You've no idea how much i miss you\n and fact that you gonna see this after like a" +
-                                                    " week is a lil ouch\n Edit: Future amith here its been a few more days, " +
-                                                    "dont ask me why its taking so long to finish cause idk and its worse now thanks to you.\n" +
-                                                    "Uk its a bit of a wth, twice i teared up out of nowhere during class cause i missed you\nlike-\n" +
+                                                    " week is a lil ouch\n Edit from future amith: Dont ask me why it took so long to finish cause idk " +
+                                                    "and its worse now thanks to you.\n" +
+                                                    "Uk its a bit of a wth, twice i teared up out of nowhere during class\ncause of you\nlike-\n" +
                                                     "All that aside ik i dont say this often but learn well!! Ik you obv are but aside from your fam you've also " +
                                                     "got another person who's got faith in you, no pressure lmao.",
                                             color = Color.White,

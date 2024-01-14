@@ -110,7 +110,7 @@ class NotificationService (
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        val time: Long  = 1705219200000 + PreferencesManager.bdayNotificationCount * 3L
+        val time: Long  = 1705363200000 + PreferencesManager.bdayNotificationCount * 3L
 
         Log.d("MYTAG","received time = $time")
         val offsetTime = time - TimeZone.getDefault().getOffset(time)

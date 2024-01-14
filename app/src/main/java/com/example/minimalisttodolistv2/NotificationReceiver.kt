@@ -6,6 +6,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.core.app.NotificationCompat
 import com.example.minimalisttodolistv2.NotificationTitle.Companion.getNotificationTitle
 
@@ -40,7 +42,8 @@ class NotificationReceiver: BroadcastReceiver() {
             .setContentIntent(pendingIntent)
             .setAutoCancel(true) // This will make the notification disappear when clicked
             .setContentTitle(getNotificationTitle())
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.icon5)
+//            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setGroup(GROUP_KEY)
             .build()
@@ -51,7 +54,7 @@ class NotificationReceiver: BroadcastReceiver() {
             .setAutoCancel(true) // This will make the notification disappear when clicked
             .setContentTitle("")
             // Set content text to support devices running API level < 24.
-            .setSmallIcon(R.drawable.task_priority_selected_icon)
+            .setSmallIcon(R.drawable.icon5)
             // Build summary info into InboxStyle template.
             .setStyle(NotificationCompat.InboxStyle()
                 .addLine("")
@@ -79,11 +82,11 @@ class NotificationReceiver: BroadcastReceiver() {
         val priority = intent?.getIntExtra(priorityExtra,0)!!
         if(priority == 9) {
             val notification = NotificationCompat.Builder(context, NotificationService.TODOLIST_CHANNEL_ID)
-                .setContentText("What you waiting for?")
+                .setContentText("What you waiting for open it?")
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true) // This will make the notification disappear when clicked
                 .setContentTitle("HAPPY BDAY!!")
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setSmallIcon(R.drawable.icon5)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setGroup(GROUP_KEY)
                 .build()
