@@ -183,11 +183,11 @@ fun deleteNotification(context: Context, notificationManager: NotificationManage
 //                    PreferencesManager.bdayNotificationCount = 0
 //                if(hasNotificationPermission && PreferencesManager.bdayNotificationCount <= 3) {
                 if(PreferencesManager.bdayNotificationCount < 3) {
-                    notificationService.scheduleBdayNotification()
+//                    notificationService.scheduleBdayNotification()
                 }
                 if(PreferencesManager.bdayVisible) {
-                    val intent = Intent(context, MessageActivity::class.java)
-                    context.startActivity(intent)
+//                    val intent = Intent(context, MessageActivity::class.java)
+//                    context.startActivity(intent)
                 }
             }
         }
