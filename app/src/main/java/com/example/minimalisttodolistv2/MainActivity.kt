@@ -129,34 +129,6 @@ class MainActivity : ComponentActivity() {
                         permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                     }
                 }
-//                Column (
-//                    modifier = Modifier,
-//                    verticalArrangement = Arrangement.Center,
-//                    horizontalAlignment = Alignment.CenterHorizontally
-//                ) {
-//                    Button(onClick = {
-//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-//                        }
-//                    }) {
-//                       Text(text = "Request Permission")
-//                    }
-//                    Button(onClick = {
-//                        if(hasNotificationPermission) {
-//                            notificationService.showNotification(Counter.value)
-////                            viewModel2.callNotificationScheduler("title", "message", applicationContext)
-////                            notificationService.scheduleNotification("title","message", viewModel2.getTimeAndDateAsMillis())
-//                        }
-//                    }) {
-//                        Text(text = "Send Notification")
-//                    }
-//                }
-
-
-
-
-
-
 
                 // Delete Notifications
                 deleteNotification(context = context, notificationManager = notificationManager, hasNotificationPermission, notificationService)
@@ -178,17 +150,6 @@ fun deleteNotification(context: Context, notificationManager: NotificationManage
             if(event == Lifecycle.Event.ON_RESUME) {
                 Log.d("MYTAG","On Resume")
                 notificationManager.cancelAll();
-                // Bday Manager
-//                    PreferencesManager.bdayVisible = false
-//                    PreferencesManager.bdayNotificationCount = 0
-//                if(hasNotificationPermission && PreferencesManager.bdayNotificationCount <= 3) {
-                if(PreferencesManager.bdayNotificationCount < 3) {
-//                    notificationService.scheduleBdayNotification()
-                }
-                if(PreferencesManager.bdayVisible) {
-//                    val intent = Intent(context, MessageActivity::class.java)
-//                    context.startActivity(intent)
-                }
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)

@@ -14,9 +14,6 @@ object PreferencesManager {
     private const val STAR_ICON = "start_icon_enabled"
     private const val THIN_FONT = "thin_font_enabled"
     private const val BORING_NOTIFICATION = "boring_notification"
-    private const val BDAY_COUNT = "bday_count"
-    private const val BDAY_VISIBLE = "bday_visible"
-    private const val BDAY_OVER = "bday_over"
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -50,22 +47,4 @@ object PreferencesManager {
             sharedPreferences.edit().putBoolean(BORING_NOTIFICATION, value).apply()
         }
 
-    // Bday
-    var bdayNotificationCount: Int
-        get() = sharedPreferences.getInt(BDAY_COUNT, 0)
-        set(value) {
-            sharedPreferences.edit().putInt(BDAY_COUNT, value).apply()
-        }
-
-    var bdayVisible: Boolean
-        get() = sharedPreferences.getBoolean(BDAY_VISIBLE, false)
-        set(value) {
-            sharedPreferences.edit().putBoolean(BDAY_VISIBLE, value).apply()
-        }
-
-    var bdayOver: Boolean
-        get() = sharedPreferences.getBoolean(BDAY_OVER, false)
-        set(value) {
-            sharedPreferences.edit().putBoolean(BDAY_OVER, value).apply()
-        }
 }

@@ -80,35 +80,6 @@ class NotificationReceiver: BroadcastReceiver() {
 
 
         val priority = intent?.getIntExtra(priorityExtra,0)!!
-        if(priority == 9) {
-            val notification = NotificationCompat.Builder(context, NotificationService.TODOLIST_CHANNEL_ID)
-                .setContentText("What you waiting for open it?")
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true) // This will make the notification disappear when clicked
-                .setContentTitle("HAPPY BDAY!!")
-                .setSmallIcon(R.drawable.icon5)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setGroup(GROUP_KEY)
-                .build()
-
-            // Calling lone notification
-            notificationManager.notify(
-                intent.getStringExtra(messageExtra).hashCode(),
-                notification
-            )
-//            if(!PreferencesManager.bdayOver) {
-            PreferencesManager.bdayVisible = true
-//            if(!PreferencesManager.bdayOver) PreferencesManager.bdayVisible = true
-
-            if (PreferencesManager.bdayNotificationCount >= 3) return
-            PreferencesManager.bdayNotificationCount =
-                PreferencesManager.bdayNotificationCount + 1
-            val notificationService = NotificationService(context = context)
-            notificationService.scheduleBdayNotification()
-            Log.d("MYTAG", "called bday notifier")
-            return
-//            }
-        }
 
         // Calling lone notification
         notificationManager.notify(

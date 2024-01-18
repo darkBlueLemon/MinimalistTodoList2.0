@@ -427,11 +427,6 @@ fun AddTaskDialog(
                                     // Hide Keyboard part 2
                                     controller?.hide()
                                 }
-
-                                if (state.taskName.lowercase(Locale.ROOT) == "bday") {
-//                                    val intent = Intent(context, MessageActivity::class.java)
-//                                    context.startActivity(intent)
-                                }
                             }
                         )
                         .align(Alignment.CenterHorizontally)
