@@ -1,4 +1,4 @@
-package com.example.minimalisttodolistv2
+package com.minimalisttodolist.pleasebethelastrecyclerview
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

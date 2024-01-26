@@ -1,15 +1,8 @@
-package com.example.minimalisttodolistv2
+package com.minimalisttodolist.pleasebethelastrecyclerview
 
 import android.util.Log
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Ease
-import androidx.compose.animation.core.EaseIn
-import androidx.compose.animation.core.EaseInSine
-import androidx.compose.animation.core.EaseOutBounce
-import androidx.compose.animation.core.EaseOutExpo
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -35,7 +28,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -156,40 +148,40 @@ fun ChangeSettingsDialog(
                         )
                     }
 
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .clickable(
-                                    interactionSource = interactionSource,
-                                    indication = null
-                                ) {
-                                    PreferencesManager.boringNotification =
-                                        !PreferencesManager.boringNotification
-                                    isBoringNotificationEnabled =
-                                        PreferencesManager.boringNotification
-                                }
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Boring Notifications",
-                                color = Color.White,
-                                modifier = Modifier
-                                    .padding(10.dp)
-//                                    .clickable {
-//                                        PreferencesManager.boringNotification = !PreferencesManager.boringNotification
-//                                    },
-                            )
-                            AnimatedVisibility(visible = isBoringNotificationEnabled) {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    tint = Color.White,
-                                    contentDescription = ""
-                                )
-                            }
-                        }
-                    }
+//                    item {
+//                        Row(
+//                            modifier = Modifier
+//                                .clickable(
+//                                    interactionSource = interactionSource,
+//                                    indication = null
+//                                ) {
+//                                    PreferencesManager.boringNotification =
+//                                        !PreferencesManager.boringNotification
+//                                    isBoringNotificationEnabled =
+//                                        PreferencesManager.boringNotification
+//                                }
+//                                .fillMaxWidth(),
+//                            horizontalArrangement = Arrangement.SpaceBetween,
+//                            verticalAlignment = Alignment.CenterVertically
+//                        ) {
+//                            Text(
+//                                text = "Boring Notifications",
+//                                color = Color.White,
+//                                modifier = Modifier
+//                                    .padding(10.dp)
+////                                    .clickable {
+////                                        PreferencesManager.boringNotification = !PreferencesManager.boringNotification
+////                                    },
+//                            )
+//                            AnimatedVisibility(visible = isBoringNotificationEnabled) {
+//                                Icon(
+//                                    imageVector = Icons.Default.Check,
+//                                    tint = Color.White,
+//                                    contentDescription = "Boring Notifications"
+//                                )
+//                            }
+//                        }
+//                    }
                     item {
                         Row(
                             modifier = Modifier
@@ -214,7 +206,7 @@ fun ChangeSettingsDialog(
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     tint = Color.White,
-                                    contentDescription = ""
+                                    contentDescription = "Thin Font"
                                 )
                             }
                         }
@@ -365,7 +357,7 @@ fun ChangeSettingsDialog(
                         AlertDialog(
                             modifier = Modifier.animateEnterExit(
                                 enter = fadeIn(animationSpec = tween(500)),
-//                                exit =  fadeOut(animationSpec = tween(500))
+                                exit =  fadeOut(animationSpec = tween(500))
                                 ),
                             onDismissRequest = {
                                 Log.d("MYTAG", "false")
@@ -409,8 +401,10 @@ fun ChangeSettingsDialog(
                                                     SortType.PRIORITY.toString()
 //                                                onEvent(TaskEvent.HideSettingsDialog)
                                             }
+                                            .padding(top = 3.dp, bottom = 3.dp)
                                             .fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
                                             text = "Priority",
@@ -421,7 +415,7 @@ fun ChangeSettingsDialog(
                                             Icon(
                                                 imageVector = Icons.Default.Check,
                                                 tint = Color.White,
-                                                contentDescription = ""
+                                                contentDescription = "priority"
                                             )
                                         }
                                     }
@@ -437,8 +431,10 @@ fun ChangeSettingsDialog(
                                                     SortType.REMAINING_TIME.toString()
 //                                                onEvent(TaskEvent.HideSettingsDialog)
                                             }
+                                            .padding(top = 3.dp, bottom = 3.dp)
                                             .fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
                                             text = "Remaining Time",
@@ -450,7 +446,7 @@ fun ChangeSettingsDialog(
                                             Icon(
                                                 imageVector = Icons.Default.Check,
                                                 tint = Color.White,
-                                                contentDescription = ""
+                                                contentDescription = "sorting"
                                             )
                                         }
                                     }
@@ -466,8 +462,10 @@ fun ChangeSettingsDialog(
                                                     SortType.ALPHABETICAL.toString()
 //                                                onEvent(TaskEvent.HideSettingsDialog)
                                             }
+                                            .padding(top = 3.dp, bottom = 3.dp)
                                             .fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
                                             text = "Alphabetical",
@@ -478,7 +476,7 @@ fun ChangeSettingsDialog(
                                             Icon(
                                                 imageVector = Icons.Default.Check,
                                                 tint = Color.White,
-                                                contentDescription = ""
+                                                contentDescription = "sorting"
                                             )
                                         }
                                     }
@@ -494,8 +492,10 @@ fun ChangeSettingsDialog(
                                                     SortType.ALPHABETICAL_REV.toString()
 //                                                onEvent(TaskEvent.HideSettingsDialog)
                                             }
+                                            .padding(top = 3.dp, bottom = 3.dp)
                                             .fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
                                             text = "Alphabetical z-a",
@@ -506,7 +506,7 @@ fun ChangeSettingsDialog(
                                             Icon(
                                                 imageVector = Icons.Default.Check,
                                                 tint = Color.White,
-                                                contentDescription = ""
+                                                contentDescription = "alphabetical"
                                             )
                                         }
                                     }

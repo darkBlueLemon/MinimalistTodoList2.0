@@ -1,4 +1,4 @@
-package com.example.minimalisttodolistv2.ui.theme
+package com.minimalisttodolist.pleasebethelastrecyclerview.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

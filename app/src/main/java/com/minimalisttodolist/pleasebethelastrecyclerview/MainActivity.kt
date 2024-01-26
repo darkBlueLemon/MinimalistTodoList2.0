@@ -1,14 +1,15 @@
-package com.example.minimalisttodolistv2
+package com.minimalisttodolist.pleasebethelastrecyclerview
 
 import android.Manifest
+import android.app.AlarmManager
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -20,13 +21,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,7 +45,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -60,7 +58,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
-import com.example.minimalisttodolistv2.ui.theme.MinimalistTodoListV2Theme
+import com.minimalisttodolist.pleasebethelastrecyclerview.ui.theme.MinimalistTodoListV2Theme
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -124,10 +122,20 @@ class MainActivity : ComponentActivity() {
 
 
                 LaunchedEffect(key1 = true) {
-                    delay(1000)
+                    delay(3000)
                     if (!hasNotificationPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        Log.d("MYTAG","called permission launcher")
                     }
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+//                        val alarmManager = ContextCompat.getSystemService(context, AlarmManager::class.java)
+//                        if (alarmManager?.canScheduleExactAlarms() == false) {
+//                            Intent().also { intent ->
+//                                intent.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+//                                context.startActivity(intent)
+//                            }
+//                        }
+//                    }
                 }
 
                 // Delete Notifications

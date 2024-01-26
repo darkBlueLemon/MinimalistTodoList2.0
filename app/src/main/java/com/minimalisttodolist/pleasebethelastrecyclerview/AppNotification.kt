@@ -1,11 +1,10 @@
-package com.example.minimalisttodolistv2
+package com.minimalisttodolist.pleasebethelastrecyclerview
 
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import android.util.Log
 
 class AppNotification: Application() {
 

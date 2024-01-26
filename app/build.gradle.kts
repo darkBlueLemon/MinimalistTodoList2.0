@@ -5,15 +5,15 @@ plugins {
 }
 
 android {
-    namespace = "com.example.minimalisttodolistv2"
+    namespace = "com.minimalisttodolist.pleasebethelastrecyclerview"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.minimalisttodolistv2"
+        applicationId = "com.minimalisttodolist.pleasebethelastrecyclerview"
         minSdk = 24
         targetSdk = 34
-        versionCode = 2
-        versionName = "2.0"
+        versionCode = 13
+        versionName = "3.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -23,7 +23,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }

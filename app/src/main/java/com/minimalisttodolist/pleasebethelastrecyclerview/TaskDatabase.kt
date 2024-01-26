@@ -1,4 +1,4 @@
-package com.example.minimalisttodolistv2
+package com.minimalisttodolist.pleasebethelastrecyclerview
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

@@ -1,11 +1,16 @@
-package com.example.minimalisttodolistv2
+package com.minimalisttodolist.pleasebethelastrecyclerview
 
+import android.Manifest
+import android.app.AlarmManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import android.provider.Settings
 import android.util.Log
-import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,14 +23,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -50,21 +48,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.minimalisttodolistv2.NotificationTitle.Companion.getNotificationTitle
-import kotlinx.coroutines.android.awaitFrame
+import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
+import com.minimalisttodolist.pleasebethelastrecyclerview.NotificationTitle.Companion.getNotificationTitle
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import java.util.Locale
 import java.util.TimeZone
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
@@ -205,7 +198,7 @@ fun AddTaskDialog(
                                     Icon(
                                         painter = painterResource(id = if (prioritySelected == 3) selected_icon else unSelected_icon),
                                         tint = Color(0xFFFF5147),
-                                        contentDescription = "Close Settings",
+                                        contentDescription = "priority",
                                         modifier = Modifier
                                             .clickable(
                                                 interactionSource = interactionSource,
@@ -215,11 +208,13 @@ fun AddTaskDialog(
                                                     onEvent(TaskEvent.SetPriority(prioritySelected))
                                                 }
                                             )
+                                            .align(Alignment.CenterVertically)
+                                            .padding(start = 4.dp, end = 4.dp)
                                     )
                                     Icon(
                                         painter = painterResource(id = if (prioritySelected == 2) selected_icon else unSelected_icon),
                                         tint = Color(0xFFFF964F),
-                                        contentDescription = "Close Settings",
+                                        contentDescription = "priority_",
                                         modifier = Modifier
                                             .clickable(
                                                 interactionSource = interactionSource,
@@ -229,11 +224,13 @@ fun AddTaskDialog(
                                                     onEvent(TaskEvent.SetPriority(prioritySelected))
                                                 }
                                             )
+                                            .align(Alignment.CenterVertically)
+                                            .padding(start = 4.dp, end = 4.dp)
                                     )
                                     Icon(
                                         painter = painterResource(id = if (prioritySelected == 1) selected_icon else unSelected_icon),
                                         tint = Color(0xFFFDFD96),
-                                        contentDescription = "Close Settings",
+                                        contentDescription = "priority2",
                                         modifier = Modifier
                                             .clickable(
                                                 interactionSource = interactionSource,
@@ -243,6 +240,8 @@ fun AddTaskDialog(
                                                     onEvent(TaskEvent.SetPriority(prioritySelected))
                                                 }
                                             )
+                                            .align(Alignment.CenterVertically)
+                                            .padding(start = 4.dp, end = 4.dp)
                                     )
                                 }
                             } else {
@@ -264,7 +263,7 @@ fun AddTaskDialog(
                                     Icon(
                                         painter = painterResource(R.drawable.task_priority_selected_icon_small),
                                         tint = transparencyColor,
-                                        contentDescription = "Close Settings",
+                                        contentDescription = "priority3",
                                     )
                                     Text(
                                         text = "Add priority",
@@ -326,7 +325,7 @@ fun AddTaskDialog(
                             Icon(
                                 painter = painterResource(R.drawable.date_icon),
                                 tint = transparencyColor,
-                                contentDescription = "Close Settings",
+                                contentDescription = "date icon",
                             )
                             ReadonlyTextField(
                                 value = if (viewModel.date != "") convertMillisToDate(viewModel.date.toLong()) else viewModel.date,
@@ -354,7 +353,7 @@ fun AddTaskDialog(
                                 Icon(
                                     painter = painterResource(R.drawable.time_icon),
                                     tint = transparencyColor,
-                                    contentDescription = "Close Settings",
+                                    contentDescription = "time icon",
                                 )
                                 ReadonlyTextField(
                                     value = if (selectedTime == "00:00") "" else selectedTime,
@@ -375,6 +374,25 @@ fun AddTaskDialog(
                     }
                 }
 
+                // Notifications
+                var hasNotificationPermission by remember {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        mutableStateOf(
+                            ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.POST_NOTIFICATIONS
+                            ) == PackageManager.PERMISSION_GRANTED
+                        )
+                    } else mutableStateOf(true)
+                }
+
+                val permissionLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.RequestPermission(),
+                    onResult = { isGranted ->
+                        hasNotificationPermission = isGranted
+                    }
+                )
+
                 // Save Button
                 Box(
                     modifier = Modifier
@@ -382,31 +400,11 @@ fun AddTaskDialog(
                             interactionSource = interactionSource,
                             indication = null,
                             onClick = {
-                                // If a time is set in the past its just set to an hour later
-//                                Log.d(
-//                                    "MYTAG",
-//                                    System
-//                                        .currentTimeMillis()
-//                                        .toString()
-//                                )
-//                                Log.d(
-//                                    "MYTAG",
-//                                    viewModel
-//                                        .getTimeAndDateAsMillis()
-//                                        .toString()
-//                                )
                                 if (System.currentTimeMillis() + TimeZone
                                         .getDefault()
                                         .getOffset(System.currentTimeMillis()) < viewModel.getTimeAndDateAsMillis()
                                 ) {
                                 } else if (state.taskName != "") {
-//                                    Toast
-//                                        .makeText(
-//                                            context,
-//                                            "Will notify in an hour",
-//                                            Toast.LENGTH_SHORT
-//                                        )
-//                                        .show()
                                     viewModel.setDate(
                                         (System.currentTimeMillis() + 60 * 60 * 1000L + TimeZone
                                             .getDefault()
@@ -414,14 +412,50 @@ fun AddTaskDialog(
                                     )
                                 }
                                 onEvent(TaskEvent.SaveTask)
+
                                 if (state.taskName != "") {
                                     // first place where alarm scheduler is called
-                                    if (state.date.isNotBlank()) viewModel.callNotificationScheduler(
-                                        getNotificationTitle(),
-                                        state.taskName,
-                                        context,
-                                        state.priority
-                                    )
+                                    if (state.date.isNotBlank()) {
+                                        val alarmManager: AlarmManager = (context.getSystemService<AlarmManager>() as AlarmManager?)!!
+                                        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                                            viewModel.callNotificationScheduler(
+                                                getNotificationTitle(),
+                                                state.taskName,
+                                                context,
+                                                state.priority
+                                            )
+//                                            when {
+//                                                alarmManager.canScheduleExactAlarms() -> {
+//                                                    viewModel.callNotificationScheduler(
+//                                                        getNotificationTitle(),
+//                                                        state.taskName,
+//                                                        context,
+//                                                        state.priority
+//                                                    )
+//                                                }
+//                                                else -> {
+//                                                    if (!hasNotificationPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                                                        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+//                                                        Log.d("MYTAG","called permission launcher")
+//                                                    }
+////                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+////                                                        val alarmManager = ContextCompat.getSystemService(context, AlarmManager::class.java)
+////                                                        if (alarmManager?.canScheduleExactAlarms() == false) {
+////                                                            if(PreferencesManager.canDisplayNotificationPermission) {
+////                                                                Intent().also { intent ->
+////                                                                    intent.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+////                                                                    context.startActivity(intent)
+////                                                                }
+////                                                                val count = PreferencesManager.updateNotificationPermissionCount
+////                                                                if(count == 1) PreferencesManager.canDisplayNotificationPermission = false
+////                                                                PreferencesManager.updateNotificationPermissionCount = count + 1
+////                                                            }
+////                                                        }
+////                                                    }
+//                                                }
+//                                            }
+                                        }
+                                    }
                                     viewModel.setDate("")
 
                                     // Hide Keyboard part 2

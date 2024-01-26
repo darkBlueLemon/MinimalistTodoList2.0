@@ -1,12 +1,7 @@
-package com.example.minimalisttodolistv2
+package com.minimalisttodolist.pleasebethelastrecyclerview
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 
 object PreferencesManager {
     private const val PREF_NAME = "todo_list_shared_pref_manager"
@@ -14,6 +9,8 @@ object PreferencesManager {
     private const val STAR_ICON = "start_icon_enabled"
     private const val THIN_FONT = "thin_font_enabled"
     private const val BORING_NOTIFICATION = "boring_notification"
+    private const val NOTIFICATION_PERMISSION_LAUNCHER_COUNT = "notification_permission_launcher_count"
+    private const val CAN_DISPLAY_NOTIFICATION_PERMISSION_LAUNCHER = "can_display_notification_permission_launcher"
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -47,4 +44,15 @@ object PreferencesManager {
             sharedPreferences.edit().putBoolean(BORING_NOTIFICATION, value).apply()
         }
 
+    var canDisplayNotificationPermission: Boolean
+        get() = sharedPreferences.getBoolean(CAN_DISPLAY_NOTIFICATION_PERMISSION_LAUNCHER, true)
+        set(value) {
+            sharedPreferences.edit().putBoolean(CAN_DISPLAY_NOTIFICATION_PERMISSION_LAUNCHER, value).apply()
+        }
+
+    var updateNotificationPermissionCount: Int
+        get() = sharedPreferences.getInt(NOTIFICATION_PERMISSION_LAUNCHER_COUNT, 0)
+        set(value) {
+            sharedPreferences.edit().putInt(NOTIFICATION_PERMISSION_LAUNCHER_COUNT, value).apply()
+        }
 }
