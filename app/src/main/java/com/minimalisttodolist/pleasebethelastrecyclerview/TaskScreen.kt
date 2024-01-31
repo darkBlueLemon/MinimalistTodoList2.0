@@ -21,8 +21,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,8 +46,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.LottieAnimation
@@ -203,11 +208,14 @@ fun TaskScreen(
                                     text = task.taskName,
                                     fontSize = 20.sp,
                                     fontWeight = customFontWeight,
-                                    maxLines = 1, // Set the desired number of lines
-                                    softWrap = true,
-                                    overflow = TextOverflow.Visible,
+//                                    maxLines = 1, // Set the desired number of lines
+//                                    softWrap = true,
+//                                    overflow = TextOverflow.Visible,
 //                                    modifier = Modifier.padding(start = 5.dp).background(Color.Magenta).size(width = 280.dp, height = 20.dp),
-                                    modifier = Modifier.padding(start = 5.dp),
+                                    modifier = Modifier
+                                        .padding(start = 5.dp)
+                                        .widthIn(max = 280.dp)
+                                        ,
                                     color = textColor,
                                 )
                             }
@@ -273,9 +281,8 @@ fun TaskScreen(
                         if (date != "") {
                             val humanFormatDate = convertMillisToDate(task.date.toLong())
                             Row (
-                                modifier = Modifier,
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
+                                horizontalArrangement = Arrangement.Center,
                             ) {
                                 Spacer(
                                     modifier = Modifier.size(
@@ -284,23 +291,46 @@ fun TaskScreen(
                                     )
                                 )
                                 val dateTimeText = if (isDateToday(task.date.toLong())) "Today $time"  else if(isDateTomorrow(task.date.toLong())) "Tomorrow $time" else if(isDateYesterday(task.date.toLong())) "Yesterday $time" else "$humanFormatDate $time"
-                                val noteText = if(task.note == "") "" else if(task.time != "" ) " | " + task.note else "| " + task.note
-                                Row (
-                                    modifier = Modifier
-                                ){
-                                    Text(
-                                        text = dateTimeText,
-                                        fontSize = 12.sp,
-                                        color = dateColor,
-                                        fontWeight = FontWeight.W300,
-                                    )
-                                    Text(
-                                        text = noteText,
-                                        fontSize = 12.sp,
-                                        color = Color(0x8FFFFFFF),
-                                        fontWeight = FontWeight.W300,
-                                    )
-                                }
+                                var noteText = if(task.note == "") "" else if(task.time != "" ) " | " + task.note else "| " + task.note
+                                val limit = 32
+                                val noteTextSize = noteText.length
+                                if (noteTextSize > limit) noteText = noteText.dropLast(noteTextSize - limit)
+                                Text(text =
+                                buildAnnotatedString {
+                                    withStyle(SpanStyle(color = dateColor)) {
+                                        append(dateTimeText)
+                                    }
+                                    withStyle(SpanStyle(color = Color(0x8FFFFFFF))) {
+                                        append(noteText)
+                                    }
+                                },
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.W300,
+//                                    maxLines = 2, // Set the desired number of lines
+//                                    softWrap = true,
+//                                    overflow = TextOverflow.Visible,
+//                                    modifier = Modifier
+//                                        .widthIn(max = 200.dp),
+                                )
+//                                Row (
+//                                    modifier = Modifier
+//                                        .widthIn(max = 200.dp),
+//                                ){
+//                                    Text(
+//                                        text = dateTimeText,
+//                                        fontSize = 12.sp,
+//                                        color = dateColor,
+//                                        fontWeight = FontWeight.W300,
+//                                    )
+//                                    Text(
+//                                        text = noteText,
+//                                        fontSize = 12.sp,
+//                                        color = Color(0x8FFFFFFF),
+//                                        fontWeight = FontWeight.W300,
+//                                        modifier = Modifier
+////                                            .widthIn(max = 80.dp),
+//                                    )
+//                                }
                             }
                         } else {
                             if(task.note == "") {
@@ -324,6 +354,8 @@ fun TaskScreen(
                                         fontSize = 12.sp,
                                         color = Color(0x8FFFFFFF),
                                         fontWeight = FontWeight.W300,
+                                        modifier = Modifier
+                                            .widthIn(max = 280.dp),
                                     )
                                 }
                             }

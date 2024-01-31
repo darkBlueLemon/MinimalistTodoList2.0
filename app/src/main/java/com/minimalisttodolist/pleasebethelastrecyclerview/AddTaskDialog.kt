@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
@@ -417,13 +418,19 @@ fun AddTaskDialog(
                                     // first place where alarm scheduler is called
                                     if (state.date.isNotBlank()) {
                                         val alarmManager: AlarmManager = (context.getSystemService<AlarmManager>() as AlarmManager?)!!
-                                        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                                             viewModel.callNotificationScheduler(
                                                 getNotificationTitle(),
                                                 state.taskName,
                                                 context,
                                                 state.priority
                                             )
+
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                                if(!hasNotificationPermission) {
+                                                    Toast.makeText(context, "Enable Notifications", Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
 //                                            when {
 //                                                alarmManager.canScheduleExactAlarms() -> {
 //                                                    viewModel.callNotificationScheduler(

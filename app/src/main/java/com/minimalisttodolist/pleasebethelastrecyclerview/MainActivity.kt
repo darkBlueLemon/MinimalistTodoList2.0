@@ -122,20 +122,11 @@ class MainActivity : ComponentActivity() {
 
 
                 LaunchedEffect(key1 = true) {
-                    delay(3000)
+                    delay(1000)
                     if (!hasNotificationPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                         Log.d("MYTAG","called permission launcher")
                     }
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-//                        val alarmManager = ContextCompat.getSystemService(context, AlarmManager::class.java)
-//                        if (alarmManager?.canScheduleExactAlarms() == false) {
-//                            Intent().also { intent ->
-//                                intent.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
-//                                context.startActivity(intent)
-//                            }
-//                        }
-//                    }
                 }
 
                 // Delete Notifications
