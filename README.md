@@ -14,7 +14,6 @@ Open the project in Android Studio.
 
 Build and run the project on an Android device or emulator.
 
-Run the server for backend functionality.
 ## Tech Stack
 
 **Kotlin:** Utilized for developing the core logic and functionalities of the app.
